@@ -16,4 +16,5 @@ def load_config(path: str = None) -> Config:
 
     return Config(
         db=DatabaseConfig(database_url=env("DATABASE_URL")),
-        debug=env.bool("DEBUG", default=False))
+        debug=env.bool("DEBUG", default=False)
+        )
