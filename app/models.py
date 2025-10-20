@@ -1,50 +1,48 @@
-import bcrypt
+from sentry_sdk.tracing import SENTRY_TRACE_HEADER_NAME
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from database import Base
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Numeric, Boolean
-from custom_types import EmailType
+from datetime import datetime
 
-
-class Tasks(Base):
-    __tablename__ = "tasks"
-
-    id = Column(Integer, primary_key=True, index=True )
-    label = Column(String)
-    question = Column(String)
-    answer = Column(String)
-    failed_answer = Column(String)
-    description = Column(String)
-    task_group_id = Column(Integer, ForeignKey("task_groups.id"))
-
-    task_group = relationship("TaskGroups", back_populates="tasks")
+Base = declarative_base()
 
 class TaskGroups(Base):
-    __tablename__ = "task_groups"
+    __tablename__ = 'task_groups'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    description = Column(String)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    image = Column(String)
 
-    tasks = relationship("Tasks", back_populates="task_group")
+    # Relationship with TaskSubgroups
+    task_subgroups = relationship("TaskSubgroups", back_populates="task_group")
+
+class TaskSubgroups(Base):
+    __tablename__ = 'task_subgroups'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    task_group_id = Column(Integer, ForeignKey('task_groups.id'), nullable=False)  # ForeignKey
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship with TaskGroups
+    task_group = relationship("TaskGroups", back_populates="task_subgroups")
+
+    # Relationship with Tasks (если есть)
+    tasks = relationship("Tasks", back_populates="task_subgroup")
+
+class Tasks(Base):
+    __tablename__ = 'tasks'
+
+    id = Column(Integer, primary_key=True, index=True)
+    question = Column(String(200), nullable=False)
+    answer = Column(String, nullable=False)
+    failed_answer = Column(String)
+    description = Column(Text)
+    task_subgroup_id = Column(Integer, ForeignKey('task_subgroups.id'), nullable=False)  # ForeignKey
 
 
-class Users(Base):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    email = Column(EmailType)
-    password_hash = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
-
-    def set_password(self, password: str):
-        """Хеширование пароля"""
-        salt = bcrypt.gensalt()
-        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
-
-    def check_password(self, password: str) -> bool:
-        """Проверка пароля"""
-        return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
-
-    def __repr__(self):
-        return f"<User(id={self.id}, username='{self.username}', email='{self.email}')>"
-
+    # Relationship with TaskSubgroups
+    task_subgroup = relationship("TaskSubgroups", back_populates="tasks")

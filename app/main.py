@@ -1,48 +1,69 @@
-from fastapi import FastAPI, Request
+# main.py
+from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from database import SessionLocal, engine
+import models
+from sqlalchemy.orm import Session, joinedload
+import uvicorn
+
 
 app = FastAPI()
 
-# Подключаем шаблоны
+# Подключаем шаблоны и статику
 templates = Jinja2Templates(directory="templates")
-
-# (опционально) если будут статические файлы (css, js, img)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 @app.get("/")
-def home(request: Request):
-    sidebar_sections = [
-        {"title": "Общие вопросы", "items": ["Рассказ о себе", "Достоинства", "Регулярные задачи"]},
-        {"title": "Неудобные вопросы", "items": ["Военный билет", "Причина смены места работы"]},
-        {"title": "API", "items": ["Определение API", "Определение REST API"]},
-        {"title": "SQL", "items": ["Определение SQL", "Операторы SQL"]},
-        {"title": "Логи и мониторинг", "items": ["Инструменты логов и мониторинга"]},
-    ]
+def home(request: Request, db: Session = Depends(get_db)):
+    # Получаем все группы с подгруппами для сайдбара
+    groups = db.query(models.TaskGroups)\
+               .options(joinedload(models.TaskGroups.task_subgroups))\
+               .all()
 
-    softs = [
-        {"title": "Общие вопросы", "description": "Graphic design is the process of visual communication and problem-solving", "image": "/static/images/Image_4.jpg"},
-        {"title": "Неудобные вопросы", "description": "Information architecture is the art and science of structuring and organizing information", "image": "/static/images/Image_5.jpg"},
-        {"title": "Работа в поддержке", "description": "It is a form of solution-based thinking with the intent of producing a constructive future result", "image": "/static/images/Image_6.jpg"},
-    ]
+    sidebar_sections = {}
+    for group in groups:
+        sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
 
-    hards = [{"title": "API",
-              "description": "Graphic design is the process of visual communication and problem-solving",
-              "image": "/static/images/Image_1.jpg", "progress": "20%"},
-        {"title": "SQL",
-         "description": "Information architecture is the art and science of structuring and organizing information",
-         "image": "/static/images/Image_2.jpg"},
-        {"title": "Логи и мониторинг",
-         "description": "It is a form of solution-based thinking with the intent of producing a constructive future result",
-         "image": "/static/images/Image_3.jpg"},
-    ]
+    # Получаем группы для "Софтов" и "Хардов" по ID
+    softs = db.query(models.TaskGroups)\
+              .filter(models.TaskGroups.id.in_([1, 2]))\
+              .all()
+
+    hards = db.query(models.TaskGroups)\
+              .filter(models.TaskGroups.id.in_([6, 7, 8]))\
+              .all()
 
     return templates.TemplateResponse(
-        "index.html",
+        "base.html",
         {
             "request": request,
             "sidebar_sections": sidebar_sections,
             "softs": softs,
             "hards": hards,
         }
+    )
+
+# @app.get("/{task_groups}/{task}")
+# def get_task_groups(task_groups: int, task: int):
+#     task =
+
+
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="localhost",  # доступ с любого IP
+        port=5000,       # порт
+        reload=True      # автоматическая перезагрузка при изменениях
     )

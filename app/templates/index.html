@@ -208,6 +208,7 @@
       height: 250px;
       object-fit: cover;
       background: var(--color-grey-71);
+      object-position: center;
     }
 
     .card-content {
@@ -496,9 +497,9 @@
 
         {% for section in sidebar_sections %}
           <div>
-            <div class="section-title">{{ section.title }}</div>
+            <div class="section-title">{{ section }}</div>
             <div class="nav-list">
-              {% for item in section['items'] %}
+              {% for item in sidebar_sections[section] %}
                 <div class="nav-item" tabindex="0" role="button">{{ item }}</div>
               {% endfor %}
             </div>
@@ -516,10 +517,10 @@
         <div class="cards-grid">
           {% for card in softs %}
             <article class="card">
-              <img src="{{ card.image }}" alt="{{ card.title }}" class="card-image" loading="lazy">
+              <img src="{{ card['image'] }}" alt="{{ card['name'] }}" class="card-image" loading="lazy">
               <div class="card-content">
-                <h3 class="card-title">{{ card.title | safe }}</h3>
-                <p class="card-text">{{ card.description }}</p>
+                <h3 class="card-title">{{ card['name'] | safe }}</h3>
+                <p class="card-text">{{ card['description'] }}</p>
                 <div class="card-actions">
                   <button class="btn btn-primary">Изучить</button>
                   {% if card.progress is defined %}

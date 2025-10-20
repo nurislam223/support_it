@@ -1,0 +1,39 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#C9DEFA" />
+  <meta name="description" content="База вопросов для изучения IT технологий" />
+  <title>База вопросов - IT обучение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+</head>
+<body>
+  <div class="page">
+    <div class="overlay" id="overlay"></div>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="sidebar">
+      <svg class="menu-icon" width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="8" width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="16" width="28" height="1" fill="var(--color-black-solid, black)"/>
+      </svg>
+      <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <path d="M1 1L19 19M19 1L1 19" stroke="var(--color-black-solid)" stroke-width="2"/>
+      </svg>
+    </button>
+
+    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
+      {% include 'sidebar.html' %}
+    </nav>
+
+    <main id="mainContent">
+      {% include 'cards.html' %}
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+</body>
+</html>

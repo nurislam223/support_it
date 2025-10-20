@@ -1,0 +1,24 @@
+<!-- templates/sidebar.html -->
+<div>
+  <h1>База<br>вопросов</h1>
+
+  <div class="search-box">
+    <input type="text" placeholder="Поиск" aria-label="Поиск по базе вопросов" id="searchInput">
+    <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- (оставьте как есть) -->
+    </svg>
+  </div>
+
+  {% for section_name, subgroups in sidebar_sections.items() %}
+    <div>
+      <div class="section-title">{{ section_name }}</div>
+      <div class="nav-list">
+        {% for subgroup_name in subgroups %}
+          <div class="nav-item" tabindex="0" role="button">{{ subgroup_name }}</div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="footer-note">Хочу в IT</div>
