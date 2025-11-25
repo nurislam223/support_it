@@ -1,0 +1,76 @@
+<!-- templates/sidebar_questions.html -->
+<div class="sidebar-header">
+  <h1 class="sidebar-title">База вопросов</h1>
+  <p class="sidebar-subtitle">IT обучение и подготовка</p>
+</div>
+
+<div class="search-box">
+  <input type="text" placeholder="Поиск" aria-label="Поиск по базе вопросов" id="searchInput">
+  <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="2"/>
+    <path d="M10 10L14 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<div class="sidebar-section">
+  <h2 class="section-title">Группы вопросов</h2>
+  <div class="nav-list">
+    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup('all')">Все вопросы</div>
+    {% for group in groups %}
+    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup({{ group.id }})">{{ group.name }}</div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="sidebar-section">
+  <h2 class="section-title">Подгруппы</h2>
+  <div class="nav-list">
+    <div class="nav-item" tabindex="0" role="button" onclick="filterBySubgroup('all')">Все подгруппы</div>
+    {% for subgroup in subgroups %}
+    <div class="nav-item" tabindex="0" role="button" onclick="filterBySubgroup({{ subgroup.id }})">{{ subgroup.name }}</div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="sidebar-section">
+  <h2 class="section-title">Быстрый доступ</h2>
+  <div class="nav-list">
+    <a href="/" class="nav-item" tabindex="0">Главная страница</a>
+    <div class="nav-item" tabindex="0" role="button" onclick="expandAll()">Развернуть все</div>
+    <div class="nav-item" tabindex="0" role="button" onclick="collapseAll()">Свернуть все</div>
+  </div>
+</div>
+
+<div class="footer-note">Хочу в IT</div>
+
+<script>
+  function filterByGroup(groupId) {
+    const groupSelect = document.getElementById('group-select');
+    groupSelect.value = groupId;
+    updateSubgroups();
+  }
+
+  function filterBySubgroup(subgroupId) {
+    const subgroupSelect = document.getElementById('subgroup-select');
+    subgroupSelect.value = subgroupId;
+    filterQuestions();
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.question-content').forEach(content => {
+      content.classList.add('expanded');
+    });
+    document.querySelectorAll('.toggle-icon').forEach(icon => {
+      icon.classList.add('expanded');
+    });
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.question-content').forEach(content => {
+      content.classList.remove('expanded');
+    });
+    document.querySelectorAll('.toggle-icon').forEach(icon => {
+      icon.classList.remove('expanded');
+    });
+  }
+</script>

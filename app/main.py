@@ -1,19 +1,18 @@
-# main.py
 from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from database import SessionLocal, engine
-import models
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session, joinedload
+import models
 import uvicorn
-
+from database import SessionLocal, engine
+import crud
 
 app = FastAPI()
 
-# Подключаем шаблоны и статику
+# Убедитесь, что пути правильные
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 def get_db():
     db = SessionLocal()
@@ -22,26 +21,23 @@ def get_db():
     finally:
         db.close()
 
-
 @app.get("/")
 def home(request: Request, db: Session = Depends(get_db)):
-    # Получаем все группы с подгруппами для сайдбара
-    groups = db.query(models.TaskGroups)\
-               .options(joinedload(models.TaskGroups.task_subgroups))\
-               .all()
+    groups = db.query(models.TaskGroups) \
+        .options(joinedload(models.TaskGroups.task_subgroups)) \
+        .all()
 
     sidebar_sections = {}
     for group in groups:
         sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
 
-    # Получаем группы для "Софтов" и "Хардов" по ID
-    softs = db.query(models.TaskGroups)\
-              .filter(models.TaskGroups.id.in_([1, 2]))\
-              .all()
+    softs = db.query(models.TaskGroups) \
+        .filter(models.TaskGroups.id.in_([1, 2])) \
+        .all()
 
-    hards = db.query(models.TaskGroups)\
-              .filter(models.TaskGroups.id.in_([6, 7, 8]))\
-              .all()
+    hards = db.query(models.TaskGroups) \
+        .filter(models.TaskGroups.id.in_([6, 7, 8])) \
+        .all()
 
     return templates.TemplateResponse(
         "base.html",
@@ -53,17 +49,23 @@ def home(request: Request, db: Session = Depends(get_db)):
         }
     )
 
-# @app.get("/{task_groups}/{task}")
-# def get_task_groups(task_groups: int, task: int):
-#     task =
+@app.get("/questions")
+def get_questions_page(request: Request, db: Session = Depends(get_db)):
+    tasks = crud.get_tasks(db)
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
 
-
-
+    return templates.TemplateResponse("question.html", {
+        "request": request,
+        "tasks": tasks,
+        "subgroups": subgroups,
+        "groups": groups
+    })
 
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host="localhost",  # доступ с любого IP
-        port=5000,       # порт
-        reload=True      # автоматическая перезагрузка при изменениях
+        host="localhost",
+        port=5000,
+        reload=True
     )

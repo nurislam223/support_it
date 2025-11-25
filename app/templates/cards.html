@@ -7,7 +7,6 @@
     {% for card in softs %}
       <article class="card">
         <div class="card-image-wrapper">
-          <!-- Предположим, что у TaskGroups есть поле image_url -->
           <img src="{{ card.image }}"
                alt="{{ card.name }}"
                class="card-image"
@@ -17,9 +16,7 @@
           <h3 class="card-title">{{ card.name | safe }}</h3>
           <p class="card-text">{{ card.description }}</p>
           <div class="card-actions">
-            <button class="btn btn-primary">Изучить</button>
-            <!-- Если у вас есть progress — добавьте условие -->
-            <!-- {% if card.progress is defined %} ... {% endif %} -->
+            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">Изучить</button>
           </div>
         </div>
       </article>
@@ -34,19 +31,25 @@
     {% for card in hards %}
       <article class="card">
         <div class="card-image-wrapper">
-          <img src="{{ card.image_url or '/static/img/placeholder.png' }}"
+          <img src="{{ card.image }}"
                alt="{{ card.name }}"
                class="card-image"
                loading="lazy">
         </div>
         <div class="card-content">
           <h3 class="card-title">{{ card.name | safe }}</h3>
-          <p class="card-text">{{ card.description or 'Описание отсутствует' }}</p>
+          <p class="card-text">{{ card.description }}</p>
           <div class="card-actions">
-            <button class="btn btn-primary">Изучить</button>
+            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">Изучить</button>
           </div>
         </div>
       </article>
     {% endfor %}
   </div>
 </section>
+
+<script>
+  function navigateToQuestions(groupId) {
+    window.location.href = `/questions?group=${groupId}`;
+  }
+</script>
