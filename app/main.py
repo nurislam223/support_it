@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, joinedload
 import models
 import uvicorn
 from database import SessionLocal, engine
 import crud
+from schemas import TaskCreate, TaskSubgroup, TaskGroup
 
 app = FastAPI()
 
@@ -61,6 +62,37 @@ def get_questions_page(request: Request, db: Session = Depends(get_db)):
         "subgroups": subgroups,
         "groups": groups
     })
+
+@app.get("/add-question")
+def add_question_page(request: Request, db: Session = Depends(get_db)):
+    """Страница для добавления нового вопроса"""
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+
+    return templates.TemplateResponse("add_question.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data
+    })
+
+@app.post("/api/questions")
+def create_question_api(task: TaskCreate, db: Session = Depends(get_db)):
+    """API endpoint для создания вопроса"""
+    try:
+        new_task = crud.create_task(db, task)
+        return {"message": "Вопрос успешно добавлен", "task_id": new_task.id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(

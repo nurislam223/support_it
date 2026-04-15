@@ -1,0 +1,389 @@
+<!-- templates/add_question.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#C9DEFA" />
+  <meta name="description" content="Добавление вопроса - База вопросов для изучения IT технологий" />
+  <title>Добавить вопрос - IT обучение</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .form-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--color-black-solid, #000);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--color-black-solid, #000);
+      margin-bottom: 10px;
+    }
+
+    .form-label .required {
+      color: #e74c3c;
+      margin-left: 4px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 14px 18px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-select {
+      cursor: pointer;
+      background-color: white;
+    }
+
+    .form-hint {
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .success-message {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      font-family: 'Ubuntu', sans-serif;
+      display: none;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      font-family: 'Ubuntu', sans-serif;
+      display: none;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        padding: 25px;
+      }
+
+      .form-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="overlay" id="overlay"></div>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="sidebar">
+      <svg class="menu-icon" width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="8" width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="16" width="28" height="1" fill="var(--color-black-solid, black)"/>
+      </svg>
+      <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <path d="M1 1L19 19M19 1L1 19" stroke="var(--color-black-solid)" stroke-width="2"/>
+      </svg>
+    </button>
+
+    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
+      {% include 'sidebar_questions.html' %}
+    </nav>
+
+    <main id="mainContent">
+      <div class="breadcrumb">
+        <div class="breadcrumb-content">
+          <div class="breadcrumb-item"><a href="/" style="text-decoration: none; color: inherit;">Главная</a></div>
+          <div class="breadcrumb-arrow">→</div>
+          <div class="breadcrumb-item"><a href="/questions" style="text-decoration: none; color: inherit;">Вопросы</a></div>
+          <div class="breadcrumb-arrow">→</div>
+          <div class="breadcrumb-item">Добавить вопрос</div>
+        </div>
+      </div>
+
+      <div class="header">
+        <h1 class="header-title">Добавить новый вопрос</h1>
+      </div>
+
+      <div class="content">
+        <div class="container">
+          <div class="form-container">
+            <div class="form-card">
+              <h2 class="form-title">Заполните форму для добавления вопроса</h2>
+
+              <div id="successMessage" class="success-message">
+                ✓ Вопрос успешно добавлен!
+              </div>
+
+              <div id="errorMessage" class="error-message">
+                ✗ Ошибка при добавлении вопроса. Пожалуйста, проверьте все поля.
+              </div>
+
+              <form id="addQuestionForm" action="/add-question" method="POST">
+                <div class="form-group">
+                  <label class="form-label" for="question">
+                    Вопрос <span class="required">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="question" 
+                    name="question" 
+                    class="form-input" 
+                    placeholder="Введите текст вопроса"
+                    required
+                    maxlength="200"
+                  >
+                  <div class="form-hint">Максимум 200 символов</div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="group_id">
+                      Группа <span class="required">*</span>
+                    </label>
+                    <select 
+                      id="group_id" 
+                      name="group_id" 
+                      class="form-select" 
+                      required
+                      onchange="updateSubgroupSelect()"
+                    >
+                      <option value="">Выберите группу</option>
+                      {% for group in groups %}
+                      <option value="{{ group.id }}">{{ group.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="task_subgroup_id">
+                      Подгруппа <span class="required">*</span>
+                    </label>
+                    <select 
+                      id="task_subgroup_id" 
+                      name="task_subgroup_id" 
+                      class="form-select" 
+                      required
+                      disabled
+                    >
+                      <option value="">Сначала выберите группу</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="answer">
+                    Правильный ответ <span class="required">*</span>
+                  </label>
+                  <textarea 
+                    id="answer" 
+                    name="answer" 
+                    class="form-textarea" 
+                    placeholder="Введите правильный ответ"
+                    required
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="failed_answer">
+                    Неправильный ответ (опционально)
+                  </label>
+                  <textarea 
+                    id="failed_answer" 
+                    name="failed_answer" 
+                    class="form-textarea" 
+                    placeholder="Пример неправильного ответа"
+                    style="min-height: 80px;"
+                  ></textarea>
+                  <div class="form-hint">Пример ответа, который показывает непонимание темы</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="description">
+                    Пояснение (опционально)
+                  </label>
+                  <textarea 
+                    id="description" 
+                    name="description" 
+                    class="form-textarea" 
+                    placeholder="Дополнительное пояснение к вопросу"
+                    style="min-height: 100px;"
+                  ></textarea>
+                  <div class="form-hint">Подробное объяснение, ссылки на документацию и т.д.</div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                  Добавить вопрос
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+  <script>
+    const subgroupsData = {{ subgroups|tojson }};
+
+    function updateSubgroupSelect() {
+      const groupSelect = document.getElementById('group_id');
+      const subgroupSelect = document.getElementById('task_subgroup_id');
+      const selectedGroupId = groupSelect.value;
+
+      subgroupSelect.innerHTML = '<option value="">Выберите подгруппу</option>';
+
+      if (!selectedGroupId) {
+        subgroupSelect.disabled = true;
+        return;
+      }
+
+      const filteredSubgroups = subgroupsData.filter(
+        sg => sg.task_group_id == selectedGroupId
+      );
+
+      if (filteredSubgroups.length === 0) {
+        subgroupSelect.innerHTML = '<option value="">В этой группе нет подгрупп</option>';
+        subgroupSelect.disabled = true;
+        return;
+      }
+
+      filteredSubgroups.forEach(subgroup => {
+        const option = document.createElement('option');
+        option.value = subgroup.id;
+        option.textContent = subgroup.name;
+        subgroupSelect.appendChild(option);
+      });
+
+      subgroupSelect.disabled = false;
+    }
+
+    document.getElementById('addQuestionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/questions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          successMessage.style.display = 'block';
+          this.reset();
+          document.getElementById('task_subgroup_id').innerHTML = '<option value="">Сначала выберите группу</option>';
+          document.getElementById('task_subgroup_id').disabled = true;
+          
+          setTimeout(() => {
+            window.location.href = '/questions';
+          }, 1500);
+        } else {
+          const errorData = await response.json();
+          errorMessage.textContent = '✗ Ошибка: ' + (errorData.detail || 'Не удалось добавить вопрос');
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        errorMessage.textContent = '✗ Ошибка соединения с сервером';
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
