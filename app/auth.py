@@ -5,10 +5,7 @@ from typing import Optional
 import os
 
 # Секретный ключ для JWT - должен быть установлен через переменную окружения в продакшене
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise ValueError("SECRET_KEY environment variable is required for production")
-
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
@@ -33,3 +30,15 @@ def verify_token(token: str):
         return payload
     except JWTError:
         return None
+
+def get_current_user_from_token(token: str, db):
+    """Получение текущего пользователя из токена"""
+    from crud import get_user_by_username
+    payload = verify_token(token)
+    if not payload:
+        return None
+    username = payload.get("sub")
+    if not username:
+        return None
+    user = get_user_by_username(db, username)
+    return user

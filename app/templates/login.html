@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Вход в систему</h4>
+                </div>
+                <div class="card-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Имя пользователя</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div id="errorAlert" class="alert alert-danger d-none"></div>
+                        <button type="submit" class="btn btn-primary w-100">Войти</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <p>Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorAlert = document.getElementById('errorAlert');
+    
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Сохраняем токен в localStorage
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('token_type', data.token_type);
+            
+            // Перенаправляем на главную
+            window.location.href = '/';
+        } else {
+            errorAlert.textContent = data.detail || 'Ошибка входа';
+            errorAlert.classList.remove('d-none');
+        }
+    } catch (error) {
+        errorAlert.textContent = 'Ошибка подключения к серверу';
+        errorAlert.classList.remove('d-none');
+    }
+});
+</script>
+{% endblock %}

@@ -1,188 +1,288 @@
 <!-- templates/question.html -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#C9DEFA" />
-  <meta name="description" content="База вопросов для изучения IT технологий" />
-  <title>Вопросы для собеседований - IT обучение</title>
-  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
-  <!-- ИСПРАВЛЕННЫЙ ПУТЬ -->
-  <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-  <div class="page">
-    <div class="overlay" id="overlay"></div>
+{% extends "base.html" %}
 
-    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="sidebar">
-      <svg class="menu-icon" width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="28" height="1" fill="var(--color-black-solid, black)"/>
-        <rect y="8" width="28" height="1" fill="var(--color-black-solid, black)"/>
-        <rect y="16" width="28" height="1" fill="var(--color-black-solid, black)"/>
-      </svg>
-      <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <path d="M1 1L19 19M19 1L1 19" stroke="var(--color-black-solid)" stroke-width="2"/>
-      </svg>
-    </button>
+{% block title %}Вопросы для собеседований - IT обучение{% endblock %}
 
-    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
-      {% include 'sidebar_questions.html' %}
-    </nav>
+{% block content %}
+<div class="breadcrumb">
+  <div class="breadcrumb-content">
+    <div class="breadcrumb-item">Все вопросы</div>
+    <div class="breadcrumb-arrow">→</div>
+    <div class="breadcrumb-item" id="current-category">Все категории</div>
+  </div>
+</div>
 
-    <main id="mainContent">
-      <div class="breadcrumb">
-        <div class="breadcrumb-content">
-          <div class="breadcrumb-item">Все вопросы</div>
-          <div class="breadcrumb-arrow">→</div>
-          <div class="breadcrumb-item" id="current-category">Все категории</div>
+<div class="header">
+  <h1 class="header-title">Вопросы для собеседований</h1>
+  {% if current_user %}
+  <div class="user-actions">
+    <span class="user-name">{{ current_user.username }}</span>
+    <button onclick="logout()" class="btn btn-outline-danger btn-sm">Выйти</button>
+  </div>
+  {% endif %}
+</div>
+
+<div class="content">
+  <div class="container">
+    <!-- Прогресс пользователя -->
+    <div class="progress-summary-card mb-4">
+      <h5>Мой прогресс</h5>
+      <div class="progress-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="total-questions">{{ tasks|length }}</span>
+          <span class="stat-label">Всего вопросов</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value text-success" id="know-count">0</span>
+          <span class="stat-label">Знаю</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value text-warning" id="almost-know-count">0</span>
+          <span class="stat-label">Почти знаю</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value text-danger" id="dont-know-count">0</span>
+          <span class="stat-label">Не знаю</span>
         </div>
       </div>
-
-      <div class="header">
-        <h1 class="header-title">Вопросы для собеседований</h1>
+      <div class="overall-progress mt-2">
+        <div class="overall-progress-fill bg-success" id="overall-progress-bar" style="width: 0%"></div>
       </div>
+      <small class="text-muted" id="progress-percentage">0% изучено</small>
+    </div>
 
-      <div class="content">
-        <div class="container">
-          <div class="stats">
-            <div class="stats-number">{{ tasks|length }}</div>
-            <div class="stats-label">всего вопросов</div>
+    <div class="stats">
+      <div class="stats-number">{{ tasks|length }}</div>
+      <div class="stats-label">всего вопросов</div>
+    </div>
+
+    <div class="filters">
+      <select id="group-select" class="filter-select" onchange="updateSubgroups()">
+        <option value="all">Все группы</option>
+        {% for group in groups %}
+        <option value="{{ group.id }}">{{ group.name }}</option>
+        {% endfor %}
+      </select>
+
+      <select id="subgroup-select" class="filter-select" onchange="filterQuestions()">
+        <option value="all">Все подгруппы</option>
+        {% for subgroup in subgroups %}
+        <option value="{{ subgroup.id }}" data-group="{{ subgroup.task_group_id }}">{{ subgroup.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    {% if tasks %}
+      {% for task in tasks %}
+      {% set user_status = user_progress.get(task.id, None) %}
+      <div class="question-item" data-subgroup="{{ task.task_subgroup_id }}" data-group="{{ task.task_subgroup.task_group_id }}" data-question-id="{{ task.id }}">
+        <div class="question-card">
+          <div class="question-header" onclick="toggleQuestion({{ task.id }})">
+            <div class="question-title">
+              {{ task.question }}
+              <span class="category-badge">{{ task.task_subgroup.name }}</span>
+              <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
+              {% if user_status %}
+                {% if user_status.value == 'know' %}
+                  <span class="progress-badge status-know">✓ Знаю</span>
+                {% elif user_status.value == 'almost_know' %}
+                  <span class="progress-badge status-almost-know">~ Почти знаю</span>
+                {% else %}
+                  <span class="progress-badge status-dont-know">✗ Не знаю</span>
+                {% endif %}
+              {% else %}
+                <span class="progress-badge status-dont-know">✗ Не знаю</span>
+              {% endif %}
+            </div>
+            <div class="toggle-icon" id="icon-{{ task.id }}">▼</div>
           </div>
+          <div class="question-content" id="content-{{ task.id }}">
+            {% if task.description %}
+            <div class="description">{{ task.description }}</div>
+            {% endif %}
 
-          <div class="filters">
-            <select id="group-select" class="filter-select" onchange="updateSubgroups()">
-              <option value="all">Все группы</option>
-              {% for group in groups %}
-              <option value="{{ group.id }}">{{ group.name }}</option>
-              {% endfor %}
-            </select>
+            <div class="answer-section">
+              <div class="answer-good">{{ task.answer }}</div>
+            </div>
 
-            <select id="subgroup-select" class="filter-select" onchange="filterQuestions()">
-              <option value="all">Все подгруппы</option>
-              {% for subgroup in subgroups %}
-              <option value="{{ subgroup.id }}" data-group="{{ subgroup.task_group_id }}">{{ subgroup.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
+            {% if task.failed_answer %}
+            <div class="answer-section">
+              <div class="answer-bad">{{ task.failed_answer }}</div>
+            </div>
+            {% endif %}
 
-          {% if tasks %}
-            {% for task in tasks %}
-            <div class="question-item" data-subgroup="{{ task.task_subgroup_id }}" data-group="{{ task.task_subgroup.task_group_id }}">
-              <div class="question-card">
-                <div class="question-header" onclick="toggleQuestion({{ task.id }})">
-                  <div class="question-title">
-                    {{ task.question }}
-                    <span class="category-badge">{{ task.task_subgroup.name }}</span>
-                    <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
-                  </div>
-                  <div class="toggle-icon" id="icon-{{ task.id }}">
-                    ▼
-                  </div>
-                </div>
-                <div class="question-content" id="content-{{ task.id }}">
-                  {% if task.description %}
-                  <div class="description">{{ task.description }}</div>
-                  {% endif %}
-
-                  <div class="answer-section">
-                    <div class="answer-good">{{ task.answer }}</div>
-                  </div>
-
-                  {% if task.failed_answer %}
-                  <div class="answer-section">
-                    <div class="answer-bad">{{ task.failed_answer }}</div>
-                  </div>
-                  {% endif %}
-                </div>
+            <!-- Кнопки управления прогрессом -->
+            <div class="progress-controls mt-3">
+              <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-success btn-sm" onclick="setProgress({{ task.id }}, 'know')">
+                  ✓ Знаю
+                </button>
+                <button type="button" class="btn btn-warning btn-sm" onclick="setProgress({{ task.id }}, 'almost_know')">
+                  ~ Почти знаю
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="setProgress({{ task.id }}, 'dont_know')">
+                  ✗ Не знаю
+                </button>
               </div>
             </div>
-            {% endfor %}
-          {% else %}
-            <div class="no-tasks">
-              Вопросы не найдены. Добавьте вопросы через API.
-            </div>
-          {% endif %}
+          </div>
         </div>
       </div>
-    </main>
+      {% endfor %}
+    {% else %}
+      <div class="no-tasks">Вопросы не найдены. Добавьте вопросы через API.</div>
+    {% endif %}
   </div>
+</div>
+{% endblock %}
 
-  <script src="{{ url_for('static', path='/js/main.js') }}"></script>
-  <script>
-    function toggleQuestion(taskId) {
-      const content = document.getElementById(`content-${taskId}`);
-      const icon = document.getElementById(`icon-${taskId}`);
+{% block scripts %}
+<script>
+const userProgress = {};
+{% for question_id, status in user_progress.items() %}
+userProgress[{{ question_id }}] = '{{ status.value }}';
+{% endfor %}
 
-      content.classList.toggle('expanded');
-      icon.classList.toggle('expanded');
-    }
+// Инициализация статистики прогресса
+function initProgressStats() {
+  let knowCount = 0;
+  let almostKnowCount = 0;
+  let dontKnowCount = 0;
+  
+  for (const [questionId, status] of Object.entries(userProgress)) {
+    if (status === 'know') knowCount++;
+    else if (status === 'almost_know') almostKnowCount++;
+    else dontKnowCount++;
+  }
+  
+  document.getElementById('know-count').textContent = knowCount;
+  document.getElementById('almost-know-count').textContent = almostKnowCount;
+  document.getElementById('dont-know-count').textContent = dontKnowCount;
+  
+  const total = {{ tasks|length }};
+  const percentage = total > 0 ? Math.round((knowCount / total) * 100) : 0;
+  document.getElementById('overall-progress-bar').style.width = percentage + '%';
+  document.getElementById('progress-percentage').textContent = percentage + '% изучено';
+}
 
-    function updateSubgroups() {
-      const groupSelect = document.getElementById('group-select');
-      const subgroupSelect = document.getElementById('subgroup-select');
-      const selectedGroup = groupSelect.value;
-
-      for (let option of subgroupSelect.options) {
-        if (option.value === 'all') continue;
-
-        if (selectedGroup === 'all' || option.dataset.group === selectedGroup) {
-          option.style.display = 'block';
-        } else {
-          option.style.display = 'none';
-        }
-      }
-
-      if (selectedGroup !== 'all' && subgroupSelect.value !== 'all') {
-        const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
-        if (selectedOption.dataset.group !== selectedGroup) {
-          subgroupSelect.value = 'all';
-        }
-      }
-
-      filterQuestions();
-    }
-
-    function filterQuestions() {
-      const groupSelect = document.getElementById('group-select');
-      const subgroupSelect = document.getElementById('subgroup-select');
-      const selectedGroup = groupSelect.value;
-      const selectedSubgroup = subgroupSelect.value;
-      const questions = document.querySelectorAll('.question-item');
-      const breadcrumb = document.getElementById('current-category');
-
-      let categoryName = 'Все категории';
-      if (selectedSubgroup !== 'all') {
-        const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
-        categoryName = selectedOption.text;
-      } else if (selectedGroup !== 'all') {
-        const selectedOption = groupSelect.options[groupSelect.selectedIndex];
-        categoryName = selectedOption.text;
-      }
-
-      breadcrumb.textContent = categoryName;
-
-      questions.forEach(question => {
-        const questionGroup = question.dataset.group;
-        const questionSubgroup = question.dataset.subgroup;
-
-        let shouldShow = true;
-
-        if (selectedGroup !== 'all' && questionGroup !== selectedGroup) {
-          shouldShow = false;
-        }
-
-        if (selectedSubgroup !== 'all' && questionSubgroup !== selectedSubgroup) {
-          shouldShow = false;
-        }
-
-        question.style.display = shouldShow ? 'block' : 'none';
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      updateSubgroups();
+async function setProgress(questionId, status) {
+  try {
+    const response = await fetchWithAuth(`/api/questions/${questionId}/progress`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: status })
     });
-  </script>
-</body>
-</html>
+    
+    if (response.ok) {
+      // Обновляем локальное состояние
+      userProgress[questionId] = status;
+      
+      // Обновляем отображение бейджа
+      const questionItem = document.querySelector(`.question-item[data-question-id="${questionId}"]`);
+      const badgeContainer = questionItem.querySelector('.question-title');
+      const existingBadge = badgeContainer.querySelector('.progress-badge');
+      if (existingBadge) {
+        existingBadge.remove();
+      }
+      
+      let badgeHtml = '';
+      if (status === 'know') {
+        badgeHtml = '<span class="progress-badge status-know">✓ Знаю</span>';
+      } else if (status === 'almost_know') {
+        badgeHtml = '<span class="progress-badge status-almost-know">~ Почти знаю</span>';
+      } else {
+        badgeHtml = '<span class="progress-badge status-dont-know">✗ Не знаю</span>';
+      }
+      
+      // Вставляем бейдж перед toggle-icon
+      const toggleIcon = badgeContainer.querySelector('.toggle-icon');
+      toggleIcon.insertAdjacentHTML('beforebegin', badgeHtml);
+      
+      // Пересчитываем статистику
+      initProgressStats();
+    }
+  } catch (error) {
+    console.error('Ошибка обновления прогресса:', error);
+    alert('Ошибка при обновлении прогресса');
+  }
+}
+
+function toggleQuestion(taskId) {
+  const content = document.getElementById(`content-${taskId}`);
+  const icon = document.getElementById(`icon-${taskId}`);
+
+  content.classList.toggle('expanded');
+  icon.classList.toggle('expanded');
+}
+
+function updateSubgroups() {
+  const groupSelect = document.getElementById('group-select');
+  const subgroupSelect = document.getElementById('subgroup-select');
+  const selectedGroup = groupSelect.value;
+
+  for (let option of subgroupSelect.options) {
+    if (option.value === 'all') continue;
+
+    if (selectedGroup === 'all' || option.dataset.group === selectedGroup) {
+      option.style.display = 'block';
+    } else {
+      option.style.display = 'none';
+    }
+  }
+
+  if (selectedGroup !== 'all' && subgroupSelect.value !== 'all') {
+    const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
+    if (selectedOption.dataset.group !== selectedGroup) {
+      subgroupSelect.value = 'all';
+    }
+  }
+
+  filterQuestions();
+}
+
+function filterQuestions() {
+  const groupSelect = document.getElementById('group-select');
+  const subgroupSelect = document.getElementById('subgroup-select');
+  const selectedGroup = groupSelect.value;
+  const selectedSubgroup = subgroupSelect.value;
+  const questions = document.querySelectorAll('.question-item');
+  const breadcrumb = document.getElementById('current-category');
+
+  let categoryName = 'Все категории';
+  if (selectedSubgroup !== 'all') {
+    const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
+    categoryName = selectedOption.text;
+  } else if (selectedGroup !== 'all') {
+    const selectedOption = groupSelect.options[groupSelect.selectedIndex];
+    categoryName = selectedOption.text;
+  }
+
+  breadcrumb.textContent = categoryName;
+
+  questions.forEach(question => {
+    const questionGroup = question.dataset.group;
+    const questionSubgroup = question.dataset.subgroup;
+
+    let shouldShow = true;
+
+    if (selectedGroup !== 'all' && questionGroup !== selectedGroup) {
+      shouldShow = false;
+    }
+
+    if (selectedSubgroup !== 'all' && questionSubgroup !== selectedSubgroup) {
+      shouldShow = false;
+    }
+
+    question.style.display = shouldShow ? 'block' : 'none';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  initProgressStats();
+  updateSubgroups();
+});
+</script>
+{% endblock %}
