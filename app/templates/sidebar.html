@@ -13,8 +13,8 @@
     <div>
       <div class="section-title">{{ section_name }}</div>
       <div class="nav-list">
-        {% for subgroup_name in subgroups %}
-          <div class="nav-item" tabindex="0" role="button">{{ subgroup_name }}</div>
+        {% for subgroup in subgroups %}
+          <div class="nav-item" tabindex="0" role="button">{{ subgroup.name }}</div>
         {% endfor %}
       </div>
     </div>
