@@ -21,7 +21,11 @@ def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[User]:
     return db.query(User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: UserCreate) -> User:
-    hashed_password = pwd_context.hash(user.password)
+    # bcrypt имеет ограничение на длину пароля в 72 байта
+    password = user.password
+    if len(password) > 72:
+        password = password[:72]
+    hashed_password = pwd_context.hash(password)
     db_user = User(
         username=user.username,
         email=user.email,
@@ -37,7 +41,12 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
     if db_user:
         update_data = user_update.model_dump(exclude_unset=True)
         if 'password' in update_data and update_data['password']:
-            update_data['hashed_password'] = pwd_context.hash(update_data.pop('password'))
+            # bcrypt имеет ограничение на длину пароля в 72 байта
+            password = update_data['password']
+            if len(password) > 72:
+                password = password[:72]
+            update_data['hashed_password'] = pwd_context.hash(password)
+            del update_data['password']
         for field, value in update_data.items():
             setattr(db_user, field, value)
         db_user.updated_at = datetime.utcnow()
