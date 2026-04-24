@@ -170,8 +170,28 @@ def get_questions_with_progress(db: Session = Depends(get_db), current_user: Use
     return result
 
 # === Existing endpoints ===
-@app.get("/")
-def home(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request, db: Session = Depends(get_db)):
+    """Общедоступная главная страница"""
+    # Проверяем, авторизован ли пользователь
+    token = request.cookies.get("access_token")
+    current_user = None
+    progress_summary = None
+    
+    if not token:
+        # Пытаемся получить токен из заголовка (для JS запросов)
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if token:
+        try:
+            current_user = get_current_user_from_token(token, db)
+            if current_user:
+                progress_summary = crud.get_user_progress_summary(db, current_user.id)
+        except Exception:
+            current_user = None
+    
     groups = db.query(models.TaskGroups) \
         .options(joinedload(models.TaskGroups.task_subgroups)) \
         .all()
@@ -187,9 +207,6 @@ def home(request: Request, db: Session = Depends(get_db), current_user: User = D
     hards = db.query(models.TaskGroups) \
         .filter(models.TaskGroups.id.in_([6, 7, 8])) \
         .all()
-
-    # Получаем прогресс пользователя
-    progress_summary = crud.get_user_progress_summary(db, current_user.id)
 
     return templates.TemplateResponse(
         "base.html",
