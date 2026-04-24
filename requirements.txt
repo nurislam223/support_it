@@ -1,9 +1,10 @@
 Jinja2~=3.1.6
 fastapi~=0.117.1
-pip~=25.3
-attrs~=25.3.0
-distro~=1.9.0
-protobuf~=6.31.0
-pillow~=11.2.1
-filelock~=3.18.0
 pydantic==2.5.0
+sqlalchemy>=2.0.0
+uvicorn>=0.24.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+environs>=9.5.0
+psycopg2-binary>=2.9.9
