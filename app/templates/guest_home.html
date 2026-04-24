@@ -1,0 +1,44 @@
+<!-- templates/guest_home.html -->
+{% extends "base.html" %}
+
+{% block title %}Главная - База вопросов{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="mb-4">Добро пожаловать в базу вопросов!</h1>
+            <p class="lead mb-4">Изучайте IT технологии с помощью нашей интерактивной базы вопросов.</p>
+            
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">У вас еще нет аккаунта?</h5>
+                    <p class="card-text">Зарегистрируйтесь, чтобы получить доступ ко всем функциям сайта и отслеживать свой прогресс.</p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="/register" class="btn btn-primary me-md-2">Зарегистрироваться</a>
+                        <a href="/login" class="btn btn-outline-secondary">Войти</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Совет:</strong> Вы можете продолжить как гость, но для сохранения прогресса рекомендуется войти или зарегистрироваться.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Переопределяем checkAuth для гостевой страницы
+    function checkAuth() {
+        // Не перенаправляем на страницу входа для гостей
+        return localStorage.getItem('access_token');
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        checkAuth();
+    });
+</script>
+{% endblock %}
