@@ -250,13 +250,29 @@ def guest_home(request: Request, db: Session = Depends(get_db)):
     )
 
 @app.get("/questions")
-def get_questions_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_questions_page(request: Request, db: Session = Depends(get_db)):
     tasks = crud.get_tasks(db)
     subgroups = crud.get_task_subgroups(db)
     groups = crud.get_task_groups(db)
     
-    # Получаем прогресс пользователя
-    user_progress = {p.question_id: p.status for p in crud.get_user_progress(db, current_user.id)}
+    # Проверяем авторизацию пользователя
+    token = request.cookies.get("access_token")
+    current_user = None
+    user_progress = {}
+    
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if token:
+        try:
+            current_user = get_current_user_from_token(token, db)
+            if current_user:
+                # Получаем прогресс только для авторизованных пользователей
+                user_progress = {p.question_id: p.status for p in crud.get_user_progress(db, current_user.id)}
+        except Exception:
+            current_user = None
 
     return templates.TemplateResponse("question.html", {
         "request": request,
