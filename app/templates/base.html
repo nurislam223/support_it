@@ -52,7 +52,8 @@
     // Проверка авторизации
     function checkAuth() {
       const token = localStorage.getItem('access_token');
-      if (!token && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+      const isGuestPage = window.location.pathname === '/guest';
+      if (!token && !isGuestPage && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
         window.location.href = '/login';
       }
       return token;

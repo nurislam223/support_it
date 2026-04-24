@@ -203,6 +203,35 @@ def home(request: Request, db: Session = Depends(get_db), current_user: User = D
         }
     )
 
+@app.get("/guest")
+def guest_home(request: Request, db: Session = Depends(get_db)):
+    """Страница для неавторизованных пользователей"""
+    groups = db.query(models.TaskGroups) \
+        .options(joinedload(models.TaskGroups.task_subgroups)) \
+        .all()
+
+    sidebar_sections = {}
+    for group in groups:
+        sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
+
+    softs = db.query(models.TaskGroups) \
+        .filter(models.TaskGroups.id.in_([1, 2])) \
+        .all()
+
+    hards = db.query(models.TaskGroups) \
+        .filter(models.TaskGroups.id.in_([6, 7, 8])) \
+        .all()
+
+    return templates.TemplateResponse(
+        "guest_home.html",
+        {
+            "request": request,
+            "sidebar_sections": sidebar_sections,
+            "softs": softs,
+            "hards": hards,
+        }
+    )
+
 @app.get("/questions")
 def get_questions_page(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     tasks = crud.get_tasks(db)
