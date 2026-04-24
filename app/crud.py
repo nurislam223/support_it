@@ -178,16 +178,36 @@ def get_tasks_by_subgroup(db: Session, subgroup_id: int) -> List[Tasks]:
 def get_tasks_by_group(db: Session, group_id: int) -> List[Tasks]:
     return db.query(Tasks).options(
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
-    ).filter(TaskSubgroups.task_group_id == group_id).join(TaskSubgroups).all()
+    ).join(TaskSubgroups).filter(
+        TaskSubgroups.task_group_id == group_id
+    ).all()
 
 def get_task_subgroups(db: Session) -> List[TaskSubgroups]:
-    return db.query(TaskSubgroups).all()
+    return db.query(TaskSubgroups).options(
+        joinedload(TaskSubgroups.task_group)
+    ).all()
+
+def get_task_subgroups_by_group(db: Session, group_id: int) -> List[TaskSubgroups]:
+    """Получить подгруппы конкретной группы"""
+    return db.query(TaskSubgroups).filter(
+        TaskSubgroups.task_group_id == group_id
+    ).all()
 
 def get_task_subgroup(db: Session, subgroup_id: int) -> Optional[TaskSubgroups]:
-    return db.query(TaskSubgroups).filter(TaskSubgroups.id == subgroup_id).first()
+    return db.query(TaskSubgroups).options(
+        joinedload(TaskSubgroups.task_group)
+    ).filter(TaskSubgroups.id == subgroup_id).first()
 
 def get_task_groups(db: Session) -> List[TaskGroups]:
-    return db.query(TaskGroups).all()
+    return db.query(TaskGroups).options(
+        joinedload(TaskGroups.task_subgroups)
+    ).all()
+
+def get_task_group(db: Session, group_id: int) -> Optional[TaskGroups]:
+    """Получить конкретную группу"""
+    return db.query(TaskGroups).options(
+        joinedload(TaskGroups.task_subgroups)
+    ).filter(TaskGroups.id == group_id).first()
 
 def create_task(db: Session, task: TaskCreate) -> Tasks:
     db_task = Tasks(**task.model_dump())
@@ -213,3 +233,17 @@ def delete_task(db: Session, task_id: int) -> bool:
         db.commit()
         return True
     return False
+
+def get_task_count_by_group(db: Session, group_id: int) -> int:
+    """Получить количество вопросов в группе"""
+    from sqlalchemy import func
+    return db.query(func.count(Tasks.id)).join(TaskSubgroups).filter(
+        TaskSubgroups.task_group_id == group_id
+    ).scalar()
+
+def get_task_count_by_subgroup(db: Session, subgroup_id: int) -> int:
+    """Получить количество вопросов в подгруппе"""
+    from sqlalchemy import func
+    return db.query(func.count(Tasks.id)).filter(
+        Tasks.task_subgroup_id == subgroup_id
+    ).scalar()
