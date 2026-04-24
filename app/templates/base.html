@@ -49,6 +49,9 @@
 
   <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
+    // Глобальная переменная для хранения текущего пользователя
+    let currentUser = {{ 'null' if not current_user else '{"username": "' ~ current_user.username ~ '"}' }};
+    
     // Проверка авторизации - больше не перенаправляем автоматически
     function checkAuth() {
       const token = localStorage.getItem('access_token');
@@ -81,12 +84,84 @@
     function logout() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('token_type');
-      window.location.href = '/login';
+      window.location.reload();
+    }
+    
+    // Обновление UI сайдбара при входе пользователя
+    async function updateSidebarAuth() {
+      const token = localStorage.getItem('access_token');
+      if (token && !currentUser) {
+        try {
+          const response = await fetchWithAuth('/api/auth/me');
+          if (response.ok) {
+            const user = await response.json();
+            currentUser = user;
+            
+            // Обновляем сайдбар
+            const authSection = document.querySelector('.auth-section');
+            if (authSection) {
+              let progressHtml = '';
+              {% if progress_summary %}
+              progressHtml = `
+                <div class="progress-bar-container">
+                  <div class="overall-progress">
+                    <div class="overall-progress-fill bg-success" style="width: {{ progress_summary.know_percent }}%"></div>
+                  </div>
+                  <small class="text-muted">{{ progress_summary.know_count }} / {{ progress_summary.total_count }} изучено</small>
+                </div>
+              `;
+              {% endif %}
+              
+              authSection.innerHTML = `
+                <div class="user-info mb-2">
+                  <span>👤 ${user.username}</span>
+                </div>
+                ${progressHtml}
+                <button class="btn btn-outline-danger btn-sm mt-2 w-100" onclick="logout()">Выйти</button>
+              `;
+            }
+            
+            // Обновляем кнопки в хедере вопросов если есть
+            const userActions = document.querySelector('.user-actions');
+            if (userActions) {
+              userActions.innerHTML = `
+                <span class="user-name">${user.username}</span>
+                <button onclick="logout()" class="btn btn-outline-danger btn-sm">Выйти</button>
+              `;
+            }
+            
+            // Скрываем сообщения для гостей
+            document.querySelectorAll('.text-muted em').forEach(el => {
+              if (el.textContent.includes('Зарегистрируйтесь или войдите')) {
+                el.parentElement.style.display = 'none';
+              }
+            });
+            
+            // Показываем кнопки прогресса
+            document.querySelectorAll('.progress-controls').forEach(ctrl => {
+              const guestMsg = ctrl.querySelector('em');
+              if (guestMsg && guestMsg.textContent.includes('Зарегистрируйтесь или войдите')) {
+                ctrl.innerHTML = `
+                  <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-success btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'know')">✓ Знаю</button>
+                    <button type="button" class="btn btn-warning btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'almost_know')">~ Почти знаю</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'dont_know')">✗ Не знаю</button>
+                  </div>
+                `;
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Ошибка проверки авторизации:', error);
+        }
+      }
     }
     
     // Проверяем авторизацию при загрузке страницы (без перенаправления)
     document.addEventListener('DOMContentLoaded', function() {
       checkAuth();
+      updateSidebarAuth();
     });
   </script>
   {% block scripts %}{% endblock %}
