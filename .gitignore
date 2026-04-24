@@ -1,4 +1,3 @@
-```
 # Python
 __pycache__/
 *.py[cod]
@@ -20,39 +19,42 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Virtual Environment
-venv/
-ENV/
-env/
+# Environment
 .venv/
-.env/
+venv/
+env/
+ENV/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
+
+# Logs
+*.log
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
+# Docker
+.dockerenv
+Dockerfile*
+docker-compose*
 
 # Coverage
 .coverage
-coverage/
 htmlcov/
+.coverage.*
 
-# Environment variables
+# Temporary files
+*.tmp
+*~
+*.bak
+
+# Local configuration
 .env
 .env.local
 *.env.*
-
-# Docker
-.dockerenv
-```

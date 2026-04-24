@@ -1,8 +1,29 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum as SQLEnum
 from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
+import enum
 
 Base = declarative_base()
+
+class KnowledgeStatus(enum.Enum):
+    """Статусы знания вопроса"""
+    KNOW = "know"  # Знаю
+    ALMOST_KNOW = "almost_know"  # Почти знаю
+    DONT_KNOW = "dont_know"  # Не знаю
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False, index=True)
+    email = Column(String(100), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship с прогрессом
+    question_progress = relationship("QuestionProgress", back_populates="user", cascade="all, delete-orphan")
 
 class TaskGroups(Base):
     __tablename__ = 'task_groups'
@@ -43,3 +64,25 @@ class Tasks(Base):
 
     # Relationship with TaskSubgroups
     task_subgroup = relationship("TaskSubgroups", back_populates="tasks")
+    
+    # Relationship с прогрессом пользователей
+    progress_records = relationship("QuestionProgress", back_populates="question", cascade="all, delete-orphan")
+
+class QuestionProgress(Base):
+    __tablename__ = 'question_progress'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    question_id = Column(Integer, ForeignKey('tasks.id'), nullable=False)
+    status = Column(SQLEnum(KnowledgeStatus), nullable=False, default=KnowledgeStatus.DONT_KNOW)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="question_progress")
+    question = relationship("Tasks", back_populates="progress_records")
+    
+    __table_args__ = (
+        # Уникальная пара user_id + question_id
+        {'sqlite_autoincrement': True},
+    )
