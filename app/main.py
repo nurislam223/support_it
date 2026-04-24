@@ -274,6 +274,11 @@ def get_questions_page(request: Request, db: Session = Depends(get_db)):
         except Exception:
             current_user = None
 
+    # Формируем sidebar_sections для навигации
+    sidebar_sections = {}
+    for group in groups:
+        sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
+
     return templates.TemplateResponse("question.html", {
         "request": request,
         "tasks": tasks,
@@ -281,7 +286,8 @@ def get_questions_page(request: Request, db: Session = Depends(get_db)):
         "groups": groups,
         "current_user": current_user,
         "user_progress": user_progress,
-        "knowledge_statuses": KnowledgeStatusEnum
+        "knowledge_statuses": KnowledgeStatusEnum,
+        "sidebar_sections": sidebar_sections
     })
 
 @app.get("/add-question")
