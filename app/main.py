@@ -286,11 +286,17 @@ def create_question_api(task: TaskCreate, db: Session = Depends(get_db), current
 # Страницы входа и регистрации
 @app.get("/login")
 def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "sidebar_sections": {}
+    })
 
 @app.get("/register")
 def register_page(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse("register.html", {
+        "request": request,
+        "sidebar_sections": {}
+    })
 
 
 if __name__ == "__main__":
