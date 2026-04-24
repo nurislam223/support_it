@@ -137,20 +137,30 @@
               }
             });
             
-            // Показываем кнопки прогресса
+            // Показываем кнопки прогресса - ищем все блоки progress-controls
             document.querySelectorAll('.progress-controls').forEach(ctrl => {
               const guestMsg = ctrl.querySelector('em');
               if (guestMsg && guestMsg.textContent.includes('Зарегистрируйтесь или войдите')) {
-                ctrl.innerHTML = `
-                  <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-success btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'know')">✓ Знаю</button>
-                    <button type="button" class="btn btn-warning btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'almost_know')">~ Почти знаю</button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="setProgress(${ctrl.closest('.question-item').dataset.questionId}, 'dont_know')">✗ Не знаю</button>
-                  </div>
-                `;
+                // Получаем ID вопроса из родительского элемента
+                const questionItem = ctrl.closest('.question-item');
+                if (questionItem && questionItem.dataset.questionId) {
+                  const questionId = questionItem.dataset.questionId;
+                  ctrl.innerHTML = `
+                    <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
+                    <div class="btn-group" role="group">
+                      <button type="button" class="btn btn-success btn-sm" onclick="setProgress(${questionId}, 'know')">✓ Знаю</button>
+                      <button type="button" class="btn btn-warning btn-sm" onclick="setProgress(${questionId}, 'almost_know')">~ Почти знаю</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="setProgress(${questionId}, 'dont_know')">✗ Не знаю</button>
+                    </div>
+                  `;
+                }
               }
             });
+            
+            // Вызываем функцию обновления UI на странице вопросов, если она существует
+            if (typeof updateProgressUIAfterLogin === 'function') {
+              updateProgressUIAfterLogin();
+            }
           }
         } catch (error) {
           console.error('Ошибка проверки авторизации:', error);
@@ -160,7 +170,6 @@
     
     // Проверяем авторизацию при загрузке страницы (без перенаправления)
     document.addEventListener('DOMContentLoaded', function() {
-      checkAuth();
       updateSidebarAuth();
     });
   </script>

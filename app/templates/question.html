@@ -152,6 +152,9 @@ userProgress[{{ question_id }}] = '{{ status.value }}';
 {% endfor %}
 {% endif %}
 
+// Флаг для отслеживания инициализации кнопок прогресса после входа
+let progressButtonsInitialized = false;
+
 // Инициализация статистики прогресса
 function initProgressStats() {
   // Если пользователь не авторизован, не показываем статистику
@@ -177,9 +180,43 @@ function initProgressStats() {
   document.getElementById('progress-percentage').textContent = percentage + '% изучено';
 }
 
+// Функция для обновления UI после входа пользователя
+function updateProgressUIAfterLogin() {
+  if (progressButtonsInitialized) return;
+  
+  // Скрываем сообщения для гостей
+  document.querySelectorAll('.text-muted em').forEach(el => {
+    if (el.textContent.includes('Зарегистрируйтесь или войдите')) {
+      el.parentElement.style.display = 'none';
+    }
+  });
+  
+  // Показываем кнопки прогресса
+  document.querySelectorAll('.progress-controls').forEach(ctrl => {
+    const guestMsg = ctrl.querySelector('em');
+    if (guestMsg && guestMsg.textContent.includes('Зарегистрируйтесь или войдите')) {
+      const questionItem = ctrl.closest('.question-item');
+      if (questionItem && questionItem.dataset.questionId) {
+        const questionId = questionItem.dataset.questionId;
+        ctrl.innerHTML = `
+          <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-success btn-sm" onclick="setProgress(${questionId}, 'know')">✓ Знаю</button>
+            <button type="button" class="btn btn-warning btn-sm" onclick="setProgress(${questionId}, 'almost_know')">~ Почти знаю</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="setProgress(${questionId}, 'dont_know')">✗ Не знаю</button>
+          </div>
+        `;
+      }
+    }
+  });
+  
+  progressButtonsInitialized = true;
+}
+
 async function setProgress(questionId, status) {
-  // Проверка авторизации
-  if (!{{ 'true' if current_user else 'false' }}) {
+  // Проверка авторизации - проверяем наличие токена
+  const token = localStorage.getItem('access_token');
+  if (!token) {
     alert('Зарегистрируйтесь или войдите, чтобы отмечать прогресс');
     return;
   }
@@ -299,6 +336,12 @@ function filterQuestions() {
 document.addEventListener('DOMContentLoaded', function() {
   initProgressStats();
   updateSubgroups();
+  
+  // Проверяем, есть ли токен авторизации, и если да - обновляем UI кнопок прогресса
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    updateProgressUIAfterLogin();
+  }
 });
 </script>
 {% endblock %}
