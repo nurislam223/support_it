@@ -8,45 +8,43 @@ __pycache__/
 env/
 venv/
 .venv/
-.ENV
-.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
 
-# Build artifacts
+# Build and distribution artifacts
 build/
 dist/
+*.egg
 *.egg-info/
+*.so
 
-# Logs
-*.log
-
-# Environment variables
+# Environment files
 .env
 .env.local
 *.env.*
 
-# IDE
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
 
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Testing
-.coverage
-htmlcov/
-.coverage.*
-.nox/
-.tox/
+# Logs
+*.log
 
-# Package management
-pip-log.txt
-pip-delete-this-directory.txt
-*.pot
-*.po
-*~
-.pytest_cache/
-.mypy_cache/
+# Coverage reports
+.coverage
+coverage/
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
 ```

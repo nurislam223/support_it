@@ -24,7 +24,8 @@
 
 <div class="content">
   <div class="container">
-    <!-- Прогресс пользователя -->
+    <!-- Прогресс пользователя - только для авторизованных -->
+    {% if current_user %}
     <div class="progress-summary-card mb-4">
       <h5>Мой прогресс</h5>
       <div class="progress-stats">
@@ -50,6 +51,7 @@
       </div>
       <small class="text-muted" id="progress-percentage">0% изучено</small>
     </div>
+    {% endif %}
 
     <div class="stats">
       <div class="stats-number">{{ tasks|length }}</div>
@@ -74,7 +76,7 @@
 
     {% if tasks %}
       {% for task in tasks %}
-      {% set user_status = user_progress.get(task.id, None) %}
+      {% set user_status = user_progress.get(task.id, None) if current_user else None %}
       <div class="question-item" data-subgroup="{{ task.task_subgroup_id }}" data-group="{{ task.task_subgroup.task_group_id }}" data-question-id="{{ task.id }}">
         <div class="question-card">
           <div class="question-header" onclick="toggleQuestion({{ task.id }})">
@@ -82,7 +84,7 @@
               {{ task.question }}
               <span class="category-badge">{{ task.task_subgroup.name }}</span>
               <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
-              {% if user_status %}
+              {% if current_user and user_status %}
                 {% if user_status.value == 'know' %}
                   <span class="progress-badge status-know">✓ Знаю</span>
                 {% elif user_status.value == 'almost_know' %}
@@ -90,8 +92,6 @@
                 {% else %}
                   <span class="progress-badge status-dont-know">✗ Не знаю</span>
                 {% endif %}
-              {% else %}
-                <span class="progress-badge status-dont-know">✗ Не знаю</span>
               {% endif %}
             </div>
             <div class="toggle-icon" id="icon-{{ task.id }}">▼</div>
@@ -112,6 +112,7 @@
             {% endif %}
 
             <!-- Кнопки управления прогрессом -->
+            {% if current_user %}
             <div class="progress-controls mt-3">
               <p class="mb-2"><strong>Отметить свой прогресс:</strong></p>
               <div class="btn-group" role="group">
@@ -126,6 +127,11 @@
                 </button>
               </div>
             </div>
+            {% else %}
+            <div class="progress-controls mt-3">
+              <p class="mb-2 text-muted"><em>Зарегистрируйтесь или войдите, чтобы отмечать прогресс</em></p>
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -140,12 +146,17 @@
 {% block scripts %}
 <script>
 const userProgress = {};
+{% if current_user %}
 {% for question_id, status in user_progress.items() %}
 userProgress[{{ question_id }}] = '{{ status.value }}';
 {% endfor %}
+{% endif %}
 
 // Инициализация статистики прогресса
 function initProgressStats() {
+  // Если пользователь не авторизован, не показываем статистику
+  if (!document.getElementById('know-count')) return;
+  
   let knowCount = 0;
   let almostKnowCount = 0;
   let dontKnowCount = 0;
@@ -167,6 +178,11 @@ function initProgressStats() {
 }
 
 async function setProgress(questionId, status) {
+  // Проверка авторизации
+  if (!{{ 'true' if current_user else 'false' }}) {
+    alert('Зарегистрируйтесь или войдите, чтобы отмечать прогресс');
+    return;
+  }
   try {
     const response = await fetchWithAuth(`/api/questions/${questionId}/progress`, {
       method: 'PUT',
