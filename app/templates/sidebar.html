@@ -19,6 +19,27 @@
       </div>
     </div>
   {% endfor %}
+  
+  <!-- Блок авторизации -->
+  <div class="auth-section mt-4">
+    {% if current_user %}
+      <div class="user-info mb-2">
+        <span>👤 {{ current_user.username }}</span>
+      </div>
+      {% if progress_summary %}
+      <div class="progress-bar-container">
+        <div class="overall-progress">
+          <div class="overall-progress-fill bg-success" style="width: {{ progress_summary.know_percent }}%"></div>
+        </div>
+        <small class="text-muted">{{ progress_summary.know_count }} / {{ progress_summary.total_count }} изучено</small>
+      </div>
+      {% endif %}
+      <button class="btn btn-outline-danger btn-sm mt-2 w-100" onclick="logout()">Выйти</button>
+    {% else %}
+      <a href="/login" class="btn btn-outline-primary btn-sm w-100 mb-2">Войти</a>
+      <a href="/register" class="btn btn-outline-success btn-sm w-100">Регистрация</a>
+    {% endif %}
+  </div>
 </div>
 
 <div class="footer-note">Хочу в IT</div>

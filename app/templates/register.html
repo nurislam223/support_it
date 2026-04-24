@@ -88,7 +88,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
             if (loginResponse.ok) {
                 localStorage.setItem('access_token', loginData.access_token);
                 localStorage.setItem('token_type', loginData.token_type);
-                window.location.href = '/';
+                // Перезагружаем страницу вместо перенаправления, чтобы применить токен
+                window.location.reload();
             } else {
                 // Если автоматический вход не удался, перенаправляем на страницу входа
                 window.location.href = '/login?registered=true';

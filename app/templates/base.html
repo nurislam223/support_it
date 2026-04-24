@@ -49,13 +49,9 @@
 
   <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
-    // Проверка авторизации
+    // Проверка авторизации - больше не перенаправляем автоматически
     function checkAuth() {
       const token = localStorage.getItem('access_token');
-      const isGuestPage = window.location.pathname === '/guest';
-      if (!token && !isGuestPage && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
-        window.location.href = '/login';
-      }
       return token;
     }
     
@@ -88,7 +84,7 @@
       window.location.href = '/login';
     }
     
-    // Проверяем авторизацию при загрузке страницы
+    // Проверяем авторизацию при загрузке страницы (без перенаправления)
     document.addEventListener('DOMContentLoaded', function() {
       checkAuth();
     });
