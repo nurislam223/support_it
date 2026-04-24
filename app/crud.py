@@ -33,7 +33,7 @@ def get_task_groups(db: Session) -> List[TaskGroups]:
     return db.query(TaskGroups).all()
 
 def create_task(db: Session, task: TaskCreate) -> Tasks:
-    db_task = Tasks(**task.dict())
+    db_task = Tasks(**task.model_dump())
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
@@ -42,7 +42,7 @@ def create_task(db: Session, task: TaskCreate) -> Tasks:
 def update_task(db: Session, task_id: int, task_update: TaskUpdate) -> Optional[Tasks]:
     db_task = db.query(Tasks).filter(Tasks.id == task_id).first()
     if db_task:
-        update_data = task_update.dict(exclude_unset=True)
+        update_data = task_update.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(db_task, field, value)
         db.commit()

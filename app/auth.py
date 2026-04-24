@@ -4,10 +4,13 @@ from passlib.context import CryptContext
 from typing import Optional
 import os
 
-# Секретный ключ для JWT
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+# Секретный ключ для JWT - должен быть установлен через переменную окружения в продакшене
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is required for production")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

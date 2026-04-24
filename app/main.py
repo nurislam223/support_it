@@ -4,16 +4,23 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, joinedload
 import models
+from models import Base
 import uvicorn
 from database import SessionLocal, engine
 import crud
 from schemas import TaskCreate, TaskSubgroup, TaskGroup
+import os
+
+# Создаем таблицы в базе данных
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Убедитесь, что пути правильные
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Получаем директорию текущего файла для правильных путей
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 def get_db():
     db = SessionLocal()
@@ -94,10 +101,12 @@ def create_question_api(task: TaskCreate, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host="localhost",
-        port=5000,
-        reload=True
+        host="0.0.0.0",
+        port=8080,
+        reload=False,
+        log_level="info"
     )

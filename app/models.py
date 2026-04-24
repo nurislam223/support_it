@@ -1,7 +1,5 @@
-from sentry_sdk.tracing import SENTRY_TRACE_HEADER_NAME
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
 Base = declarative_base()
@@ -24,13 +22,13 @@ class TaskSubgroups(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     description = Column(Text)
-    task_group_id = Column(Integer, ForeignKey('task_groups.id'), nullable=False)  # ForeignKey
+    task_group_id = Column(Integer, ForeignKey('task_groups.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship with TaskGroups
     task_group = relationship("TaskGroups", back_populates="task_subgroups")
 
-    # Relationship with Tasks (если есть)
+    # Relationship with Tasks
     tasks = relationship("Tasks", back_populates="task_subgroup")
 
 class Tasks(Base):
@@ -41,8 +39,7 @@ class Tasks(Base):
     answer = Column(String, nullable=False)
     failed_answer = Column(String)
     description = Column(Text)
-    task_subgroup_id = Column(Integer, ForeignKey('task_subgroups.id'), nullable=False)  # ForeignKey
-
+    task_subgroup_id = Column(Integer, ForeignKey('task_subgroups.id'), nullable=False)
 
     # Relationship with TaskSubgroups
     task_subgroup = relationship("TaskSubgroups", back_populates="tasks")
