@@ -16,6 +16,11 @@
   --header-height: 60px;
   --safe-area-inset-left: env(safe-area-inset-left);
   --safe-area-inset-right: env(safe-area-inset-right);
+  
+  /* Цвета статусов прогресса */
+  --status-know: #28a745;
+  --status-almost: #ffc107;
+  --status-dont: #dc3545;
 }
 
 * {
@@ -154,6 +159,171 @@ nav.sidebar {
   margin-top: auto;
   padding-top: 20px;
 }
+
+/* Кнопка просмотра прогресса */
+.btn-progress-view {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-progress-view:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+/* Модальное окно прогресса */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  border-bottom: 1px solid #eee;
+  padding: 20px 24px;
+}
+
+.modal-title {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+/* Статистические круги */
+.stat-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-family: 'Unbounded', sans-serif;
+  transition: transform 0.3s ease;
+}
+
+.stat-circle:hover {
+  transform: scale(1.05);
+}
+
+.stat-circle-know {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.stat-circle-almost {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: black;
+}
+
+.stat-circle-dont {
+  background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+  color: white;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Контейнер общего прогресса */
+.overall-progress-container {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* Группы графиков */
+.groups-chart-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.group-chart-item {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.group-chart-item:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+}
+
+.group-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.group-chart-name {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-grey-21);
+}
+
+.group-chart-percent {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--status-know);
+}
+
+.group-progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.group-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.group-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+}
+
+.group-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.group-stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.group-stat-dot.know { background: var(--status-know); }
+.group-stat-dot.almost { background: var(--status-almost); }
+.group-stat-dot.dont { background: var(--status-dont); }
 
 /* Main content */
 main {

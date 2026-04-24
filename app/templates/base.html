@@ -47,6 +47,7 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
     // Глобальная переменная для хранения текущего пользователя
@@ -87,6 +88,83 @@
       window.location.reload();
     }
     
+    // Показать модальное окно прогресса
+    async function showProgressModal() {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        alert('Пожалуйста, войдите в систему');
+        window.location.href = '/login';
+        return;
+      }
+      
+      try {
+        const response = await fetchWithAuth('/api/progress');
+        if (response.ok) {
+          const data = await response.json();
+          updateProgressModal(data);
+          const modal = new bootstrap.Modal(document.getElementById('progressModal'));
+          modal.show();
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки прогресса:', error);
+        alert('Ошибка при загрузке данных прогресса');
+      }
+    }
+    
+    // Обновление содержимого модального окна
+    function updateProgressModal(data) {
+      // Обновляем круговую статистику
+      document.getElementById('modal-know-count').textContent = data.know_count;
+      document.getElementById('modal-almost-count').textContent = data.almost_know_count;
+      document.getElementById('modal-dont-count').textContent = data.dont_know_count;
+      
+      // Общий прогресс
+      const totalPercent = data.total_questions > 0 
+        ? Math.round((data.know_count / data.total_questions) * 100) 
+        : 0;
+      document.getElementById('modal-progress-percent').textContent = totalPercent + '%';
+      document.getElementById('modal-progress-bar').style.width = totalPercent + '%';
+      
+      // График по группам
+      const container = document.getElementById('groupsChartContainer');
+      container.innerHTML = '';
+      
+      data.groups.forEach(group => {
+        const groupPercent = group.progress_percentage;
+        const fillPercent = groupPercent;
+        
+        const groupHtml = `
+          <div class="group-chart-item">
+            <div class="group-chart-header">
+              <span class="group-chart-name">${group.group_name}</span>
+              <span class="group-chart-percent">${groupPercent}%</span>
+            </div>
+            <div class="group-progress-bar">
+              <div class="group-progress-fill bg-success" style="width: ${fillPercent}%"></div>
+            </div>
+            <div class="group-stats">
+              <div class="group-stat-item">
+                <span class="group-stat-dot know"></span>
+                <span>${group.know_count}</span>
+              </div>
+              <div class="group-stat-item">
+                <span class="group-stat-dot almost"></span>
+                <span>${group.almost_know_count}</span>
+              </div>
+              <div class="group-stat-item">
+                <span class="group-stat-dot dont"></span>
+                <span>${group.dont_know_count}</span>
+              </div>
+              <div class="group-stat-item ms-auto text-muted">
+                <span>Всего: ${group.total_questions}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.innerHTML += groupHtml;
+      });
+    }
+    
     // Обновление UI сайдбара при входе пользователя
     async function updateSidebarAuth() {
       const token = localStorage.getItem('access_token');
@@ -117,6 +195,7 @@
                   <span>👤 ${user.username}</span>
                 </div>
                 ${progressHtml}
+                <button class="btn btn-progress-view btn-sm mt-2 w-100" onclick="showProgressModal()">📊 Мой прогресс</button>
                 <button class="btn btn-outline-danger btn-sm mt-2 w-100" onclick="logout()">Выйти</button>
               `;
             }

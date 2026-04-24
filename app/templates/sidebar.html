@@ -34,6 +34,9 @@
         <small class="text-muted">{{ progress_summary.know_count }} / {{ progress_summary.total_count }} изучено</small>
       </div>
       {% endif %}
+      <button class="btn btn-progress-view btn-sm mt-2 w-100" onclick="showProgressModal()">
+        📊 Мой прогресс
+      </button>
       <button class="btn btn-outline-danger btn-sm mt-2 w-100" onclick="logout()">Выйти</button>
     {% else %}
       <a href="/login" class="btn btn-outline-primary btn-sm w-100 mb-2">Войти</a>
@@ -43,3 +46,62 @@
 </div>
 
 <div class="footer-note">Хочу в IT</div>
+
+<!-- Модальное окно прогресса -->
+<div id="progressModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">📊 Мой прогресс обучения</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Общая статистика -->
+        <div class="progress-overview mb-4">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="stat-circle stat-circle-know">
+                <span class="stat-number" id="modal-know-count">0</span>
+                <span class="stat-label">Знаю</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-circle stat-circle-almost">
+                <span class="stat-number" id="modal-almost-count">0</span>
+                <span class="stat-label">Почти знаю</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="stat-circle stat-circle-dont">
+                <span class="stat-number" id="modal-dont-count">0</span>
+                <span class="stat-label">Не знаю</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Прогресс бар -->
+        <div class="overall-progress-container mb-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">Общий прогресс</span>
+            <span class="fw-bold" id="modal-progress-percent">0%</span>
+          </div>
+          <div class="overall-progress">
+            <div class="overall-progress-fill bg-success" id="modal-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <!-- График по группам -->
+        <div class="groups-progress">
+          <h6 class="mb-3">Прогресс по группам тем</h6>
+          <div id="groupsChartContainer" class="groups-chart-container">
+            <!-- Сюда будут добавляться графики по группам -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
