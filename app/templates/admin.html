@@ -1,0 +1,687 @@
+<!-- templates/admin.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#C9DEFA" />
+  <meta name="description" content="Админ панель - Управление вопросами" />
+  <title>Админ панель - Добавление вопросов</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .admin-header {
+      margin-bottom: 30px;
+    }
+    
+    .admin-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+    
+    .form-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .form-section-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #C9DEFA;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 15px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #4A90E2;
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-help {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background: #4A90E2;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #357ABD;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .message {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+    }
+    
+    .message-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .message-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .questions-list {
+      margin-top: 30px;
+    }
+    
+    .question-item-admin {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border-left: 4px solid #4A90E2;
+    }
+    
+    .question-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .question-item-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      flex: 1;
+    }
+    
+    .question-item-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .question-item-meta {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    .question-item-answer {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    
+    .question-item-answer-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #28a745;
+      margin-bottom: 5px;
+    }
+    
+    .question-item-failed {
+      background: #fff5f5;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    
+    .question-item-failed-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #dc3545;
+      margin-bottom: 5px;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    .modal-close:hover {
+      color: #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="overlay" id="overlay"></div>
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню" aria-expanded="false" aria-controls="sidebar">
+      <svg class="menu-icon" width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="8" width="28" height="1" fill="var(--color-black-solid, black)"/>
+        <rect y="16" width="28" height="1" fill="var(--color-black-solid, black)"/>
+      </svg>
+      <svg class="close-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <path d="M1 1L19 19M19 1L1 19" stroke="var(--color-black-solid)" stroke-width="2"/>
+      </svg>
+    </button>
+
+    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
+      {% include 'sidebar.html' %}
+    </nav>
+
+    <main id="mainContent">
+      <div class="admin-container">
+        <div class="admin-header">
+          <h1 class="admin-title">Добавление вопросов</h1>
+          <p style="color: #666; font-family: 'Ubuntu', sans-serif;">Управление вопросами, ответами и пояснениями</p>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Форма добавления вопроса -->
+        <div class="form-section">
+          <h2 class="form-section-title">Новый вопрос</h2>
+          <form id="taskForm" onsubmit="submitTask(event)">
+            <div class="form-group">
+              <label class="form-label" for="task_group_id">Группа *</label>
+              <select class="form-select" id="task_group_id" name="task_group_id" required onchange="updateSubgroupSelect()">
+                <option value="">Выберите группу</option>
+                {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="task_subgroup_id">Подгруппа *</label>
+              <select class="form-select" id="task_subgroup_id" name="task_subgroup_id" required>
+                <option value="">Сначала выберите группу</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="question">Вопрос *</label>
+              <input type="text" class="form-input" id="question" name="question" required placeholder="Введите текст вопроса">
+              <div class="form-help">Максимум 200 символов</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="answer">Правильный ответ *</label>
+              <textarea class="form-textarea" id="answer" name="answer" required placeholder="Введите правильный ответ"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="failed_answer">Неправильный ответ</label>
+              <textarea class="form-textarea" id="failed_answer" name="failed_answer" placeholder="Введите пример неправильного ответа"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="description">Пояснение</label>
+              <textarea class="form-textarea" id="description" name="description" placeholder="Дополнительное пояснение к вопросу"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Добавить вопрос</button>
+              <button type="reset" class="btn btn-secondary">Очистить форму</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Список существующих вопросов -->
+        <div class="form-section questions-list">
+          <h2 class="form-section-title">Существующие вопросы</h2>
+          <div class="form-actions" style="margin-bottom: 20px;">
+            <button class="btn btn-success" onclick="loadQuestions()">Обновить список</button>
+          </div>
+          <div id="questionsListContainer">
+            <p style="color: #666; text-align: center;">Загрузка вопросов...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Модальное окно для редактирования -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Редактирование вопроса</h2>
+        <button class="modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="editForm" onsubmit="updateTask(event)">
+        <input type="hidden" id="edit_task_id">
+        
+        <div class="form-group">
+          <label class="form-label" for="edit_task_group_id">Группа *</label>
+          <select class="form-select" id="edit_task_group_id" required onchange="updateEditSubgroupSelect()">
+            {% for group in groups %}
+            <option value="{{ group.id }}">{{ group.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_task_subgroup_id">Подгруппа *</label>
+          <select class="form-select" id="edit_task_subgroup_id" required>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_question">Вопрос *</label>
+          <input type="text" class="form-input" id="edit_question" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_answer">Правильный ответ *</label>
+          <textarea class="form-textarea" id="edit_answer" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_failed_answer">Неправильный ответ</label>
+          <textarea class="form-textarea" id="edit_failed_answer"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_description">Пояснение</label>
+          <textarea class="form-textarea" id="edit_description"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    // Данные о подгруппах
+    const subgroupsData = {{ subgroups | tojson }};
+    const groupsData = {{ groups | tojson }};
+
+    // Обновление списка подгрупп при выборе группы
+    function updateSubgroupSelect() {
+      const groupId = document.getElementById('task_group_id').value;
+      const subgroupSelect = document.getElementById('task_subgroup_id');
+      
+      subgroupSelect.innerHTML = '<option value="">Выберите подгруппу</option>';
+      
+      if (groupId) {
+        const filteredSubgroups = subgroupsData.filter(sg => sg.task_group_id == groupId);
+        filteredSubgroups.forEach(subgroup => {
+          const option = document.createElement('option');
+          option.value = subgroup.id;
+          option.textContent = subgroup.name;
+          subgroupSelect.appendChild(option);
+        });
+      }
+    }
+
+    function updateEditSubgroupSelect() {
+      const groupId = document.getElementById('edit_task_group_id').value;
+      const subgroupSelect = document.getElementById('edit_task_subgroup_id');
+      
+      subgroupSelect.innerHTML = '<option value="">Выберите подгруппу</option>';
+      
+      if (groupId) {
+        const filteredSubgroups = subgroupsData.filter(sg => sg.task_group_id == groupId);
+        filteredSubgroups.forEach(subgroup => {
+          const option = document.createElement('option');
+          option.value = subgroup.id;
+          option.textContent = subgroup.name;
+          subgroupSelect.appendChild(option);
+        });
+      }
+    }
+
+    // Показ сообщения
+    function showMessage(message, type) {
+      const container = document.getElementById('messageContainer');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message message-${type}`;
+      messageDiv.textContent = message;
+      container.innerHTML = '';
+      container.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+
+    // Отправка формы
+    async function submitTask(event) {
+      event.preventDefault();
+      
+      const formData = {
+        task_subgroup_id: parseInt(document.getElementById('task_subgroup_id').value),
+        question: document.getElementById('question').value,
+        answer: document.getElementById('answer').value,
+        failed_answer: document.getElementById('failed_answer').value || null,
+        description: document.getElementById('description').value || null
+      };
+
+      try {
+        const response = await fetch('/api/tasks/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showMessage('Вопрос успешно добавлен!', 'success');
+          document.getElementById('taskForm').reset();
+          loadQuestions();
+        } else {
+          showMessage(result.detail || 'Ошибка при добавлении вопроса', 'error');
+        }
+      } catch (error) {
+        showMessage('Ошибка соединения с сервером', 'error');
+        console.error('Error:', error);
+      }
+    }
+
+    // Загрузка вопросов
+    async function loadQuestions() {
+      const container = document.getElementById('questionsListContainer');
+      
+      try {
+        const response = await fetch('/api/tasks/');
+        const tasks = await response.json();
+
+        if (tasks.length === 0) {
+          container.innerHTML = '<p style="color: #666; text-align: center;">Вопросы не найдены</p>';
+          return;
+        }
+
+        let html = '';
+        tasks.forEach(task => {
+          html += `
+            <div class="question-item-admin">
+              <div class="question-item-header">
+                <div class="question-item-title">${escapeHtml(task.question)}</div>
+                <div class="question-item-actions">
+                  <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="openEditModal(${task.id})">Ред.</button>
+                  <button class="btn btn-danger" style="padding: 8px 16px; font-size: 13px;" onclick="deleteTask(${task.id})">Удалить</button>
+                </div>
+              </div>
+              <div class="question-item-meta">
+                Группа: ${escapeHtml(task.task_subgroup.task_group.name)} | 
+                Подгруппа: ${escapeHtml(task.task_subgroup.name)}
+              </div>
+              <div class="question-item-answer">
+                <div class="question-item-answer-label">✓ Правильный ответ:</div>
+                ${escapeHtml(task.answer)}
+              </div>
+              ${task.failed_answer ? `
+              <div class="question-item-failed">
+                <div class="question-item-failed-label">✗ Неправильный ответ:</div>
+                ${escapeHtml(task.failed_answer)}
+              </div>
+              ` : ''}
+              ${task.description ? `
+              <div style="margin-top: 10px; font-size: 13px; color: #666;">
+                <strong>Пояснение:</strong> ${escapeHtml(task.description)}
+              </div>
+              ` : ''}
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      } catch (error) {
+        container.innerHTML = '<p style="color: #dc3545; text-align: center;">Ошибка загрузки вопросов</p>';
+        console.error('Error:', error);
+      }
+    }
+
+    // Открытие модального окна редактирования
+    async function openEditModal(taskId) {
+      try {
+        const response = await fetch(`/api/tasks/${taskId}`);
+        const task = await response.json();
+
+        document.getElementById('edit_task_id').value = task.id;
+        document.getElementById('edit_task_group_id').value = task.task_subgroup.task_group_id;
+        
+        // Обновить список подгрупп
+        updateEditSubgroupSelect();
+        
+        // Установить подгруппу с небольшой задержкой
+        setTimeout(() => {
+          document.getElementById('edit_task_subgroup_id').value = task.task_subgroup_id;
+        }, 100);
+        
+        document.getElementById('edit_question').value = task.question;
+        document.getElementById('edit_answer').value = task.answer;
+        document.getElementById('edit_failed_answer').value = task.failed_answer || '';
+        document.getElementById('edit_description').value = task.description || '';
+
+        document.getElementById('editModal').classList.add('active');
+      } catch (error) {
+        showMessage('Ошибка загрузки данных вопроса', 'error');
+        console.error('Error:', error);
+      }
+    }
+
+    // Закрытие модального окна
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    // Обновление задачи
+    async function updateTask(event) {
+      event.preventDefault();
+      
+      const taskId = document.getElementById('edit_task_id').value;
+      const formData = {
+        task_subgroup_id: parseInt(document.getElementById('edit_task_subgroup_id').value),
+        question: document.getElementById('edit_question').value,
+        answer: document.getElementById('edit_answer').value,
+        failed_answer: document.getElementById('edit_failed_answer').value || null,
+        description: document.getElementById('edit_description').value || null
+      };
+
+      try {
+        const response = await fetch(`/api/tasks/${taskId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showMessage('Вопрос успешно обновлен!', 'success');
+          closeEditModal();
+          loadQuestions();
+        } else {
+          showMessage(result.detail || 'Ошибка при обновлении вопроса', 'error');
+        }
+      } catch (error) {
+        showMessage('Ошибка соединения с сервером', 'error');
+        console.error('Error:', error);
+      }
+    }
+
+    // Удаление задачи
+    async function deleteTask(taskId) {
+      if (!confirm('Вы уверены, что хотите удалить этот вопрос?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/tasks/${taskId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          showMessage('Вопрос успешно удален!', 'success');
+          loadQuestions();
+        } else {
+          showMessage('Ошибка при удалении вопроса', 'error');
+        }
+      } catch (error) {
+        showMessage('Ошибка соединения с сервером', 'error');
+        console.error('Error:', error);
+      }
+    }
+
+    // Экранирование HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Загрузка вопросов при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      loadQuestions();
+    });
+  </script>
+</body>
+</html>
