@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 from models import Tasks, TaskSubgroups, TaskGroups
-from schemas import TaskCreate, TaskUpdate
+from schemas import TaskCreate, TaskUpdate, TaskGroupCreate, TaskSubgroupCreate
 from typing import List, Optional
 
 def get_tasks(db: Session, skip: int = 0, limit: int = 100) -> List[Tasks]:
@@ -56,3 +56,17 @@ def delete_task(db: Session, task_id: int) -> bool:
         db.commit()
         return True
     return False
+
+def create_task_group(db: Session, group: TaskGroupCreate) -> TaskGroups:
+    db_group = TaskGroups(**group.dict())
+    db.add(db_group)
+    db.commit()
+    db.refresh(db_group)
+    return db_group
+
+def create_task_subgroup(db: Session, subgroup: TaskSubgroupCreate) -> TaskSubgroups:
+    db_subgroup = TaskSubgroups(**subgroup.dict())
+    db.add(db_subgroup)
+    db.commit()
+    db.refresh(db_subgroup)
+    return db_subgroup

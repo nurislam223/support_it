@@ -49,3 +49,9 @@ class TaskUpdate(BaseModel):
     failed_answer: Optional[str] = None
     description: Optional[str] = None
     task_subgroup_id: Optional[int] = None
+
+class TaskGroupCreate(TaskGroupBase):
+    pass
+
+class TaskSubgroupCreate(TaskSubgroupBase):
+    pass
