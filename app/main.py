@@ -3,11 +3,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session, joinedload
-import models
+from app import models
 import uvicorn
-from database import SessionLocal, engine
-import crud
-from schemas import TaskCreate, TaskSubgroup, TaskGroup
+from app.database import SessionLocal, engine
+from app import crud
+from app.schemas import TaskCreate, TaskSubgroup, TaskGroup
 
 app = FastAPI()
 
