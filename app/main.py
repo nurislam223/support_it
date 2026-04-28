@@ -8,12 +8,16 @@ import uvicorn
 from app.database import SessionLocal, engine
 from app import crud
 from app.schemas import TaskCreate, TaskSubgroup, TaskGroup
+import os
+
+# Get the directory where main.py is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI()
 
-# Убедитесь, что пути правильные
-templates = Jinja2Templates(directory="templates")
-app.mount("static", StaticFiles(directory="static"), name="static")
+# Use absolute paths relative to this file's location
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 def get_db():
     db = SessionLocal()
