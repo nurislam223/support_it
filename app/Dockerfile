@@ -17,6 +17,6 @@ RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8080
+CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8081
