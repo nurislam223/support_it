@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "127.0.0.1:8082:8082"
+      - "127.0.0.1:8082:8080"
     environment:
       - DATABASE_URL=postgresql://admin:bKQFV21M0zTCeOg@217.198.12.151:5432/support_it
       - DEBUG=false
