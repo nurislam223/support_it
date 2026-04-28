@@ -19,4 +19,4 @@ USER appuser
 
 EXPOSE 8082
 
-CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8082
+CMD alembic revision --autogenerate && alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8082
