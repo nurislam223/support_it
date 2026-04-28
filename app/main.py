@@ -70,11 +70,17 @@ def admin_page(request: Request, db: Session = Depends(get_db)):
     subgroups = crud.get_task_subgroups(db)
     groups = crud.get_task_groups(db)
 
+    # Формируем sidebar_sections для бокового меню
+    sidebar_sections = {}
+    for group in groups:
+        sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
+
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "tasks": tasks,
         "subgroups": subgroups,
-        "groups": groups
+        "groups": groups,
+        "sidebar_sections": sidebar_sections
     })
 
 # API endpoints для задач (вопросов)
