@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-from models import Tasks, TaskSubgroups, TaskGroups
-from schemas import TaskCreate, TaskUpdate
+from app.models import Tasks, TaskSubgroups, TaskGroups
+from app.schemas import TaskCreate, TaskUpdate
 from typing import List, Optional
 
 def get_tasks(db: Session, skip: int = 0, limit: int = 100) -> List[Tasks]:

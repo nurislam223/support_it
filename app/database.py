@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from config import DatabaseConfig, Config, load_config
+from app.config import DatabaseConfig, Config, load_config
 
 # Настройки подключения к БД
 config = load_config()
