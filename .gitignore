@@ -24,7 +24,7 @@ env.bak/
 *.sqlite3
 
 # Alembic
-alembic/versions/*.py
+
 
 # Dependencies
 pip-log.txt
