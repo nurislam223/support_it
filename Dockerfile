@@ -17,6 +17,6 @@ RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 
 USER appuser
 
-EXPOSE 8082
+EXPOSE 8080
 
-CMD alembic stamp head && uvicorn app.main:app --host 0.0.0.0 --port 8082
+CMD alembic stamp head && uvicorn app.main:app --host 0.0.0.0 --port 8080
