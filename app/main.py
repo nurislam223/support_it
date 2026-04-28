@@ -75,10 +75,21 @@ def admin_page(request: Request, db: Session = Depends(get_db)):
     for group in groups:
         sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
 
+    # Преобразуем модели SQLAlchemy в словари для JSON сериализации
+    subgroups_data = [
+        {
+            "id": sg.id,
+            "name": sg.name,
+            "description": sg.description,
+            "task_group_id": sg.task_group_id
+        }
+        for sg in subgroups
+    ]
+
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "tasks": tasks,
-        "subgroups": subgroups,
+        "subgroups": subgroups_data,
         "groups": groups,
         "sidebar_sections": sidebar_sections
     })
