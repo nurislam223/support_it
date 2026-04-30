@@ -132,9 +132,36 @@ def delete_question_api(task_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/edit-question")
+def edit_question_page(request: Request, db: Session = Depends(get_db)):
+    """Страница для выбора вопроса на редактирование"""
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+    
+    tasks = crud.get_tasks(db)
+
+    return templates.TemplateResponse("edit_question.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data,
+        "tasks": tasks,
+        "task_id": None  # Нет выбранного вопроса
+    })
+
+
 @app.get("/edit-question/{task_id}")
-def edit_question_page(request: Request, task_id: int, db: Session = Depends(get_db)):
-    """Страница для редактирования вопроса"""
+def edit_question_page_with_id(request: Request, task_id: int, db: Session = Depends(get_db)):
+    """Страница для редактирования конкретного вопроса"""
     # Проверяем существование вопроса
     task = crud.get_task(db, task_id)
     if not task:
