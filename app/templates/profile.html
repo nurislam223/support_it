@@ -1,0 +1,132 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль - База вопросов</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .profile-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+    }
+    .profile-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .profile-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 30px;
+    }
+    .profile-info {
+      margin-bottom: 30px;
+    }
+    .profile-field {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .profile-field:last-child {
+      border-bottom: none;
+    }
+    .field-label {
+      font-weight: 500;
+      color: #666;
+    }
+    .field-value {
+      color: #000;
+    }
+    .admin-badge {
+      background: #4A90E2;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    .btn-logout {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background: #dc3545;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-logout:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #4A90E2;
+      text-decoration: none;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main id="mainContent" style="margin-left: 0;">
+      <div class="profile-container">
+        <div class="profile-card">
+          <h1 class="profile-title">Профиль пользователя</h1>
+          
+          <div class="profile-info">
+            <div class="profile-field">
+              <span class="field-label">Имя пользователя:</span>
+              <span class="field-value">{{ current_user.username }}</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Роль:</span>
+              <span class="field-value">
+                {% if is_admin %}
+                  <span class="admin-badge">Администратор</span>
+                {% else %}
+                  Пользователь
+                {% endif %}
+              </span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Дата регистрации:</span>
+              <span class="field-value">{{ current_user.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+            </div>
+          </div>
+          
+          <button onclick="logout()" class="btn-logout">Выйти</button>
+          
+          <a href="/" class="back-link">← Вернуться на главную</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    async function logout() {
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+      } catch (error) {
+        console.error('Ошибка выхода:', error);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -2,6 +2,20 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+class UserBase(BaseModel):
+    username: str
+    is_admin: bool = False
+
+class UserCreate(UserBase):
+    password: str
+
+class User(UserBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 class TaskGroupBase(BaseModel):
     name: str
     description: Optional[str] = None

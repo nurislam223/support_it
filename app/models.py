@@ -1,9 +1,21 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
 Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship с задачами (кто создал)
+    tasks = relationship("Tasks", back_populates="creator")
 
 class TaskGroups(Base):
     __tablename__ = 'task_groups'
@@ -41,7 +53,10 @@ class Tasks(Base):
     failed_answer = Column(String)
     description = Column(Text)
     task_subgroup_id = Column(Integer, ForeignKey('task_subgroups.id'), nullable=False)  # ForeignKey
-
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=True)
 
     # Relationship with TaskSubgroups
     task_subgroup = relationship("TaskSubgroups", back_populates="tasks")
+    
+    # Relationship with User
+    creator = relationship("User", back_populates="tasks")

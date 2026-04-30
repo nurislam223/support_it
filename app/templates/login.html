@@ -1,0 +1,154 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход - База вопросов</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .auth-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 30px;
+    }
+    .auth-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .auth-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #000;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #000;
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      box-sizing: border-box;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+    }
+    .error-message {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .auth-link {
+      text-align: center;
+      margin-top: 20px;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    .auth-link a {
+      color: #4A90E2;
+      text-decoration: none;
+    }
+    .auth-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main id="mainContent" style="margin-left: 0;">
+      <div class="auth-container">
+        <div class="auth-card">
+          <h1 class="auth-title">Вход</h1>
+          
+          <div id="errorMessage" class="error-message"></div>
+          
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label" for="username">Имя пользователя</label>
+              <input type="text" id="username" name="username" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="password">Пароль</label>
+              <input type="password" id="password" name="password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">Войти</button>
+          </form>
+          
+          <div class="auth-link">
+            Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const errorMessage = document.getElementById('errorMessage');
+      
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          window.location.href = '/';
+        } else {
+          errorMessage.textContent = data.detail || 'Ошибка входа';
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        errorMessage.textContent = 'Ошибка соединения с сервером';
+        errorMessage.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
