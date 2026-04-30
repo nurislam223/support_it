@@ -94,6 +94,11 @@
                     <div class="answer-bad">{{ task.failed_answer }}</div>
                   </div>
                   {% endif %}
+                  
+                  <div class="question-actions">
+                    <a href="/edit-question/{{ task.id }}" class="btn-edit">Редактировать</a>
+                    <button onclick="deleteQuestion({{ task.id }})" class="btn-delete">Удалить</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -116,6 +121,38 @@
 
       content.classList.toggle('expanded');
       icon.classList.toggle('expanded');
+    }
+
+    async function deleteQuestion(taskId) {
+      if (!confirm('Вы уверены, что хотите удалить этот вопрос?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/questions/${taskId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          // Удаляем элемент из DOM
+          const questionItem = document.querySelector(`.question-item[data-subgroup]`);
+          const items = document.querySelectorAll('.question-item');
+          for (let item of items) {
+            // Находим элемент по содержимому кнопки
+            const deleteBtn = item.querySelector(`button[onclick="deleteQuestion(${taskId})"]`);
+            if (deleteBtn) {
+              item.remove();
+              break;
+            }
+          }
+          alert('Вопрос успешно удален');
+        } else {
+          const errorData = await response.json();
+          alert('Ошибка: ' + (errorData.detail || 'Не удалось удалить вопрос'));
+        }
+      } catch (error) {
+        alert('Ошибка соединения с сервером');
+      }
     }
 
     function updateSubgroups() {
