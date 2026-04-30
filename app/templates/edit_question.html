@@ -160,12 +160,100 @@
       background: #e0e0e0;
     }
 
+    /* Стили для страницы выбора вопроса */
+    .question-select-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .question-select-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .question-select-item {
+      padding: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .question-select-item:hover {
+      border-color: #4A90E2;
+      background: #f8f9fa;
+      transform: translateY(-2px);
+    }
+
+    .question-select-item.selected {
+      border-color: #4A90E2;
+      background: #e8f4fd;
+    }
+
+    .question-select-text {
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .question-select-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .question-select-badge {
+      background: #4A90E2;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: 'Ubuntu', sans-serif;
+    }
+
+    .question-select-badge.group {
+      background: #6c757d;
+    }
+
+    .select-question-btn {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .select-question-btn.visible {
+      display: block;
+    }
+
+    .select-question-btn:hover {
+      background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+    }
+
     @media (max-width: 768px) {
       .form-row {
         grid-template-columns: 1fr;
       }
 
-      .form-card {
+      .form-card,
+      .question-select-card {
         padding: 25px;
       }
 
@@ -201,18 +289,74 @@
           <div class="breadcrumb-arrow">→</div>
           <div class="breadcrumb-item"><a href="/questions" style="text-decoration: none; color: inherit;">Вопросы</a></div>
           <div class="breadcrumb-arrow">→</div>
-          <div class="breadcrumb-item">Редактировать вопрос</div>
+          <div class="breadcrumb-item" id="breadcrumbAction">Выбрать вопрос</div>
         </div>
       </div>
 
       <div class="header">
-        <h1 class="header-title">Редактировать вопрос</h1>
+        <h1 class="header-title" id="pageTitle">Редактировать вопрос</h1>
       </div>
 
       <div class="content">
         <div class="container">
           <div class="form-container">
-            <div class="form-card">
+            <!-- Карточка выбора вопроса -->
+            <div class="question-select-card" id="questionSelectCard">
+              <h2 class="form-title">Выберите вопрос для редактирования</h2>
+              
+              <div class="form-group">
+                <label class="form-label" for="filterGroupSelect">
+                  Фильтр по группе
+                </label>
+                <select 
+                  id="filterGroupSelect" 
+                  class="form-select" 
+                  onchange="filterQuestionsList()"
+                >
+                  <option value="all">Все группы</option>
+                  {% for group in groups %}
+                  <option value="{{ group.id }}">{{ group.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="filterSubgroupSelect">
+                  Фильтр по подгруппе
+                </label>
+                <select 
+                  id="filterSubgroupSelect" 
+                  class="form-select" 
+                  onchange="filterQuestionsList()"
+                  disabled
+                >
+                  <option value="all">Все подгруппы</option>
+                </select>
+              </div>
+
+              <ul class="question-select-list" id="questionSelectList">
+                {% for task in tasks %}
+                <li class="question-select-item" 
+                    data-id="{{ task.id }}" 
+                    data-group="{{ task.task_subgroup.task_group_id }}"
+                    data-subgroup="{{ task.task_subgroup_id }}"
+                    onclick="selectQuestion({{ task.id }})">
+                  <div class="question-select-text">{{ task.question }}</div>
+                  <div class="question-select-meta">
+                    <span class="question-select-badge group">{{ task.task_subgroup.task_group.name }}</span>
+                    <span class="question-select-badge">{{ task.task_subgroup.name }}</span>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+
+              <button class="select-question-btn" id="editSelectedBtn" onclick="goToEditPage()">
+                Редактировать выбранный вопрос
+              </button>
+            </div>
+
+            <!-- Форма редактирования -->
+            <div class="form-card" id="editFormCard" style="display: none;">
               <h2 class="form-title">Измените данные вопроса</h2>
 
               <div id="successMessage" class="success-message">
@@ -324,8 +468,8 @@
                   Сохранить изменения
                 </button>
                 
-                <button type="button" class="btn-cancel" onclick="window.location.href='/questions'">
-                  Отмена
+                <button type="button" class="btn-cancel" onclick="showQuestionSelector()">
+                  Назад к выбору
                 </button>
               </form>
             </div>
@@ -338,7 +482,100 @@
   <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
     const subgroupsData = {{ subgroups|tojson }};
-    const taskId = {{ task_id }};
+    const taskId = {{ task_id if task_id else 'null' }};
+    let selectedQuestionId = null;
+
+    // Фильтрация списка вопросов
+    function filterQuestionsList() {
+      const groupSelect = document.getElementById('filterGroupSelect');
+      const subgroupSelect = document.getElementById('filterSubgroupSelect');
+      const selectedGroup = groupSelect.value;
+
+      // Обновляем список подгрупп
+      subgroupSelect.innerHTML = '<option value="all">Все подгруппы</option>';
+      
+      if (selectedGroup !== 'all') {
+        const filteredSubgroups = subgroupsData.filter(
+          sg => sg.task_group_id == selectedGroup
+        );
+        
+        filteredSubgroups.forEach(subgroup => {
+          const option = document.createElement('option');
+          option.value = subgroup.id;
+          option.textContent = subgroup.name;
+          subgroupSelect.appendChild(option);
+        });
+        
+        subgroupSelect.disabled = false;
+      } else {
+        subgroupSelect.disabled = true;
+      }
+
+      // Фильтруем вопросы
+      const questions = document.querySelectorAll('.question-select-item');
+      const selectedSubgroup = subgroupSelect.value;
+
+      questions.forEach(question => {
+        const questionGroup = question.dataset.group;
+        const questionSubgroup = question.dataset.subgroup;
+
+        let shouldShow = true;
+
+        if (selectedGroup !== 'all' && questionGroup !== selectedGroup) {
+          shouldShow = false;
+        }
+
+        if (selectedSubgroup !== 'all' && questionSubgroup !== selectedSubgroup) {
+          shouldShow = false;
+        }
+
+        question.style.display = shouldShow ? 'block' : 'none';
+      });
+    }
+
+    // Выбор вопроса
+    function selectQuestion(id) {
+      selectedQuestionId = id;
+      
+      // Убираем выделение со всех
+      document.querySelectorAll('.question-select-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Выделяем выбранный
+      const selectedItem = document.querySelector(`.question-select-item[data-id="${id}"]`);
+      if (selectedItem) {
+        selectedItem.classList.add('selected');
+      }
+      
+      // Показываем кнопку редактирования
+      const editBtn = document.getElementById('editSelectedBtn');
+      editBtn.classList.add('visible');
+    }
+
+    // Переход на страницу редактирования
+    function goToEditPage() {
+      if (selectedQuestionId) {
+        window.location.href = `/edit-question/${selectedQuestionId}`;
+      }
+    }
+
+    // Показать форму редактирования
+    function showEditForm() {
+      document.getElementById('questionSelectCard').style.display = 'none';
+      document.getElementById('editFormCard').style.display = 'block';
+      document.getElementById('breadcrumbAction').textContent = 'Редактирование';
+      document.getElementById('pageTitle').textContent = 'Редактировать вопрос';
+    }
+
+    // Показать выбор вопроса
+    function showQuestionSelector() {
+      document.getElementById('questionSelectCard').style.display = 'block';
+      document.getElementById('editFormCard').style.display = 'none';
+      document.getElementById('breadcrumbAction').textContent = 'Выбрать вопрос';
+      document.getElementById('pageTitle').textContent = 'Редактировать вопрос';
+      selectedQuestionId = null;
+    }
 
     function updateSubgroupSelect() {
       const groupSelect = document.getElementById('group_id');
@@ -374,6 +611,10 @@
 
     // Загрузка данных вопроса
     async function loadTaskData() {
+      if (!taskId) {
+        return;
+      }
+
       const loadingMessage = document.getElementById('loadingMessage');
       const editForm = document.getElementById('editQuestionForm');
       const errorMessage = document.getElementById('errorMessage');
@@ -412,6 +653,9 @@
 
         loadingMessage.style.display = 'none';
         editForm.style.display = 'block';
+        
+        // Показываем форму редактирования
+        showEditForm();
 
       } catch (error) {
         loadingMessage.style.display = 'none';
@@ -458,8 +702,11 @@
       }
     });
 
-    // Загружаем данные при открытии страницы
-    document.addEventListener('DOMContentLoaded', loadTaskData);
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+      filterQuestionsList();
+      loadTaskData();
+    });
   </script>
 </body>
 </html>
