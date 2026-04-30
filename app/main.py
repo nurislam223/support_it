@@ -98,6 +98,68 @@ def create_question_api(task: TaskCreate, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/questions/{task_id}")
+def get_question_api(task_id: int, db: Session = Depends(get_db)):
+    """API endpoint для получения вопроса по ID"""
+    task = crud.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    return task
+
+@app.put("/api/questions/{task_id}")
+def update_question_api(task_id: int, task_update: TaskCreate, db: Session = Depends(get_db)):
+    """API endpoint для обновления вопроса"""
+    try:
+        updated_task = crud.update_task(db, task_id, task_update)
+        if not updated_task:
+            raise HTTPException(status_code=404, detail="Вопрос не найден")
+        return {"message": "Вопрос успешно обновлен", "task_id": updated_task.id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/questions/{task_id}")
+def delete_question_api(task_id: int, db: Session = Depends(get_db)):
+    """API endpoint для удаления вопроса"""
+    try:
+        success = crud.delete_task(db, task_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Вопрос не найден")
+        return {"message": "Вопрос успешно удален"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/edit-question/{task_id}")
+def edit_question_page(request: Request, task_id: int, db: Session = Depends(get_db)):
+    """Страница для редактирования вопроса"""
+    # Проверяем существование вопроса
+    task = crud.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+
+    return templates.TemplateResponse("edit_question.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data,
+        "task_id": task_id
+    })
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",

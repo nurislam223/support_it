@@ -597,3 +597,61 @@ main {
   .card { border-radius: 10px; }
   .card-image-wrapper { height: 200px; }
 }
+/* Question actions (edit/delete buttons) */
+.question-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-edit {
+  display: inline-block;
+  padding: 10px 20px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+  background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-delete {
+  padding: 10px 20px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+@media (max-width: 768px) {
+  .question-actions {
+    flex-direction: column;
+  }
+  
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+    text-align: center;
+  }
+}
