@@ -240,6 +240,76 @@ def edit_question_page_with_id(request: Request, task_id: int, db: Session = Dep
         "is_admin": True,
     })
 
+
+@app.get("/delete-question")
+def delete_question_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    """Страница для выбора вопроса на удаление - только для админов"""
+    if not user or not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Только администраторы могут удалять вопросы"
+        )
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+    
+    tasks = crud.get_tasks(db)
+
+    return templates.TemplateResponse("delete_question.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data,
+        "tasks": tasks,
+        "task_id": None,  # Нет выбранного вопроса
+        "is_admin": True,
+    })
+
+
+@app.get("/delete-question/{task_id}")
+def delete_question_page_with_id(request: Request, task_id: int, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    """Страница для удаления конкретного вопроса - только для админов"""
+    if not user or not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Только администраторы могут удалять вопросы"
+        )
+    
+    # Проверяем существование вопроса
+    task = crud.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+
+    return templates.TemplateResponse("delete_question.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data,
+        "task_id": task_id,
+        "is_admin": True,
+    })
+
 # Authentication endpoints
 @app.get("/login")
 def login_page(request: Request):
