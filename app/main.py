@@ -53,13 +53,7 @@ def require_admin(user: models.User = Depends(get_current_user_from_cookie)):
 
 @app.get("/")
 def home(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
-    groups = db.query(models.TaskGroups) \
-        .options(joinedload(models.TaskGroups.task_subgroups)) \
-        .all()
-
-    sidebar_sections = {}
-    for group in groups:
-        sidebar_sections[group.name] = [subgroup.name for subgroup in group.task_subgroups]
+    groups = db.query(models.TaskGroups).all()
 
     softs = db.query(models.TaskGroups) \
         .filter(models.TaskGroups.id.in_([1, 2])) \
@@ -75,7 +69,7 @@ def home(request: Request, db: Session = Depends(get_db), user: models.User = De
         "base.html",
         {
             "request": request,
-            "sidebar_sections": sidebar_sections,
+            "groups": groups,
             "softs": softs,
             "hards": hards,
             "is_admin": is_admin,
@@ -84,7 +78,7 @@ def home(request: Request, db: Session = Depends(get_db), user: models.User = De
     )
 
 @app.get("/questions")
-def get_questions_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+def get_questions_page(request: Request, group_id: int = None, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
     tasks = crud.get_tasks(db)
     subgroups = crud.get_task_subgroups(db)
     groups = crud.get_task_groups(db)
@@ -96,6 +90,7 @@ def get_questions_page(request: Request, db: Session = Depends(get_db), user: mo
         "tasks": tasks,
         "subgroups": subgroups,
         "groups": groups,
+        "group_id": group_id,
         "is_admin": is_admin,
     })
 
