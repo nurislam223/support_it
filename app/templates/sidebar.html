@@ -23,10 +23,28 @@
   <div class="sidebar-section" style="margin-top: 30px;">
     <h2 class="section-title">Авторизация</h2>
     <div class="nav-list">
+      {% if current_user %}
+      <a href="/profile" class="nav-item" tabindex="0">Профиль</a>
+      <a href="#" class="nav-item" tabindex="0" id="logoutBtn">Выйти</a>
+      {% else %}
       <a href="/login" class="nav-item" tabindex="0">Войти</a>
       <a href="/register" class="nav-item" tabindex="0">Регистрация</a>
+      {% endif %}
     </div>
   </div>
 </div>
 
 <div class="footer-note">Хочу в IT</div>
+
+{% if current_user %}
+<script>
+document.getElementById('logoutBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  fetch('/api/logout', {
+    method: 'POST'
+  }).then(function() {
+    window.location.href = '/';
+  });
+});
+</script>
+{% endif %}
