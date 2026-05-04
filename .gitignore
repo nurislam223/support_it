@@ -1,1 +1,35 @@
-Nothing should be ignored based on the provided file changes, as they only include source code and template files (.html, .py).
+```
+# Dependencies
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.env
+.env.local
+.env.*
+.ENV
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+.MF
+tags
+TAGS
+.idlelib/
+.DS_Store
+Thumbs.db
+```
