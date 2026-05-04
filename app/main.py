@@ -8,7 +8,7 @@ import uvicorn
 from app.database import SessionLocal, engine
 from app import crud
 from app.schemas import TaskCreate, TaskSubgroup, TaskGroup, UserCreate
-from app.auth import create_access_token, verify_token, get_password_hash, verify_password
+from app.auth import create_access_token, verify_token, get_password_hash, verify_password, ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import timedelta
 import os
 
@@ -170,6 +170,39 @@ def delete_question_api(task_id: int, db: Session = Depends(get_db), user: model
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/manage-questions")
+def manage_questions_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    """Единая страница для редактирования и удаления вопросов - только для админов"""
+    if not user or not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Только администраторы могут управлять вопросами"
+        )
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+
+    # Конвертируем в словари для JSON сериализации
+    subgroups_data = [
+        {"id": sg.id, "name": sg.name, "task_group_id": sg.task_group_id}
+        for sg in subgroups
+    ]
+    groups_data = [
+        {"id": g.id, "name": g.name, "description": g.description}
+        for g in groups
+    ]
+    
+    tasks = crud.get_tasks(db)
+
+    return templates.TemplateResponse("manage_questions.html", {
+        "request": request,
+        "subgroups": subgroups_data,
+        "groups": groups_data,
+        "tasks": tasks,
+        "is_admin": True,
+    })
+
 
 @app.get("/edit-question")
 def edit_question_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
