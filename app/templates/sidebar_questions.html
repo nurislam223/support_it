@@ -23,16 +23,6 @@
 </div>
 
 <div class="sidebar-section">
-  <h2 class="section-title">Подгруппы</h2>
-  <div class="nav-list">
-    <div class="nav-item" tabindex="0" role="button" onclick="filterBySubgroup('all')">Все подгруппы</div>
-    {% for subgroup in subgroups %}
-    <div class="nav-item" tabindex="0" role="button" onclick="filterBySubgroup({{ subgroup.id }})">{{ subgroup.name }}</div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="sidebar-section">
   <h2 class="section-title">Быстрый доступ</h2>
   <div class="nav-list">
     <a href="/" class="nav-item" tabindex="0">Главная страница</a>
