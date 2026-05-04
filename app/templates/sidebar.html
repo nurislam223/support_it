@@ -5,20 +5,30 @@
   <div class="search-box">
     <input type="text" placeholder="Поиск" aria-label="Поиск по базе вопросов" id="searchInput">
     <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- (оставьте как есть) -->
+      <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="2"/>
+      <path d="M10 10L14 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
     </svg>
   </div>
 
-  {% for section_name, subgroups in sidebar_sections.items() %}
-    <div>
-      <div class="section-title">{{ section_name }}</div>
-      <div class="nav-list">
-        {% for subgroup_name in subgroups %}
-          <div class="nav-item" tabindex="0" role="button">{{ subgroup_name }}</div>
-        {% endfor %}
-      </div>
+  <div class="sidebar-section">
+    <h2 class="section-title">Группы вопросов</h2>
+    <div class="nav-list">
+      <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
+      {% for group in groups %}
+      <a href="/questions?group_id={{ group.id }}" class="nav-item" tabindex="0">{{ group.name }}</a>
+      {% endfor %}
     </div>
-  {% endfor %}
+  </div>
+
+  {% if current_user and current_user.is_admin %}
+  <div class="sidebar-section" style="margin-top: 30px;">
+    <h2 class="section-title">Управление</h2>
+    <div class="nav-list">
+      <a href="/add-question" class="nav-item" tabindex="0">Добавить вопрос</a>
+      <a href="/manage-questions" class="nav-item" tabindex="0">Редактировать/Удалить</a>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="sidebar-section" style="margin-top: 30px;">
     <h2 class="section-title">Авторизация</h2>
