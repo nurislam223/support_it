@@ -1,29 +1,45 @@
-```
-# Python
+```gitignore
+# Compiled Python files
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+
+# Dependencies
+venv/
+.venv/
+.env
+.env.local
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Logs
+*.log
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Build/dist directories
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
 
-# Static files
-app/static/
+# OS generated files
+.DS_Store
+Thumbs.db
 
-# Templates
-app/templates/
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+__pycache__/
 ```
