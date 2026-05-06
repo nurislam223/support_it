@@ -15,9 +15,9 @@
 <div class="sidebar-section">
   <h2 class="section-title">Группы вопросов</h2>
   <div class="nav-list">
-    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup('all')">Все вопросы</div>
+    <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
     {% for group in groups %}
-    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup({{ group.id }})">{{ group.name }}</div>
+    <a href="/questions?group_id={{ group.id }}" class="nav-item" tabindex="0">{{ group.name }}</a>
     {% endfor %}
   </div>
 </div>
@@ -31,41 +31,7 @@
     <a href="/add-question" class="nav-item" tabindex="0">Добавить вопрос</a>
     <a href="/manage-questions" class="nav-item" tabindex="0">Управление вопросами</a>
     {% endif %}
-    <div class="nav-item" tabindex="0" role="button" onclick="expandAll()">Развернуть все</div>
-    <div class="nav-item" tabindex="0" role="button" onclick="collapseAll()">Свернуть все</div>
   </div>
 </div>
 
 <div class="footer-note">Хочу в IT</div>
-
-<script>
-  function filterByGroup(groupId) {
-    const groupSelect = document.getElementById('group-select');
-    groupSelect.value = groupId;
-    updateSubgroups();
-  }
-
-  function filterBySubgroup(subgroupId) {
-    const subgroupSelect = document.getElementById('subgroup-select');
-    subgroupSelect.value = subgroupId;
-    filterQuestions();
-  }
-
-  function expandAll() {
-    document.querySelectorAll('.question-content').forEach(content => {
-      content.classList.add('expanded');
-    });
-    document.querySelectorAll('.toggle-icon').forEach(icon => {
-      icon.classList.add('expanded');
-    });
-  }
-
-  function collapseAll() {
-    document.querySelectorAll('.question-content').forEach(content => {
-      content.classList.remove('expanded');
-    });
-    document.querySelectorAll('.toggle-icon').forEach(icon => {
-      icon.classList.remove('expanded');
-    });
-  }
-</script>

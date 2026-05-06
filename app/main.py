@@ -94,6 +94,40 @@ def get_questions_page(request: Request, group_id: int = None, db: Session = Dep
         "is_admin": is_admin,
     })
 
+
+@app.get("/question/{task_id}")
+def get_question_detail_page(request: Request, task_id: int, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    """Страница с детальным просмотром вопроса"""
+    task = crud.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    
+    # Получаем все вопросы той же подгруппы для навигации
+    all_tasks = crud.get_tasks(db)
+    subgroup_tasks = [t for t in all_tasks if t.task_subgroup_id == task.task_subgroup_id]
+    subgroup_tasks.sort(key=lambda x: x.id)
+    
+    # Находим текущий индекс
+    current_index = next((i for i, t in enumerate(subgroup_tasks) if t.id == task_id), -1)
+    
+    # Определяем предыдущий и следующий вопросы
+    prev_task = subgroup_tasks[current_index - 1] if current_index > 0 else None
+    next_task = subgroup_tasks[current_index + 1] if current_index < len(subgroup_tasks) - 1 else None
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+    is_admin = user.is_admin if user else False
+
+    return templates.TemplateResponse("question_detail.html", {
+        "request": request,
+        "task": task,
+        "subgroups": subgroups,
+        "groups": groups,
+        "is_admin": is_admin,
+        "prev_task": prev_task,
+        "next_task": next_task,
+    })
+
 @app.get("/add-question")
 def add_question_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
     """Страница для добавления нового вопроса - только для админов"""

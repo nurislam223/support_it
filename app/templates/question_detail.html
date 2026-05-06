@@ -1,0 +1,118 @@
+<!-- templates/question_detail.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#C9DEFA" />
+  <meta name="description" content="{{ task.question }}" />
+  <title>{{ task.question }} - Вопрос для собеседования</title>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="page">
+    <div class="overlay" id="overlay"></div>
+
+    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
+      {% include 'sidebar_questions.html' %}
+    </nav>
+
+    <main id="mainContent">
+      <div class="breadcrumb">
+        <div class="breadcrumb-content">
+          <a href="/questions" class="breadcrumb-item">Все вопросы</a>
+          <div class="breadcrumb-arrow">→</div>
+          <div class="breadcrumb-item">{{ task.task_subgroup.name }}</div>
+        </div>
+      </div>
+
+      <div class="header">
+        <h1 class="header-title">Вопрос</h1>
+      </div>
+
+      <div class="content">
+        <div class="container">
+          <div class="question-detail-card">
+            <div class="question-detail-header">
+              <span class="category-badge">{{ task.task_subgroup.name }}</span>
+              <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
+            </div>
+            
+            <h2 class="question-detail-text">{{ task.question }}</h2>
+            
+            {% if task.description %}
+            <div class="description">{{ task.description }}</div>
+            {% endif %}
+
+            <div class="answer-blocks">
+              <div class="answer-block">
+                <button class="answer-toggle" onclick="toggleAnswer('good-answer')">
+                  <span class="toggle-text">Хороший ответ</span>
+                  <span class="toggle-icon-small" id="icon-good-answer">▼</span>
+                </button>
+                <div class="answer-content" id="content-good-answer">
+                  <div class="answer-good">{{ task.answer }}</div>
+                </div>
+              </div>
+
+              {% if task.failed_answer %}
+              <div class="answer-block">
+                <button class="answer-toggle" onclick="toggleAnswer('bad-answer')">
+                  <span class="toggle-text">Плохой ответ</span>
+                  <span class="toggle-icon-small" id="icon-bad-answer">▼</span>
+                </button>
+                <div class="answer-content" id="content-bad-answer">
+                  <div class="answer-bad">{{ task.failed_answer }}</div>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            
+            {% if is_admin %}
+            <div class="question-actions">
+              <a href="/edit-question/{{ task.id }}" class="btn-edit">Редактировать</a>
+              <a href="/delete-question/{{ task.id }}" class="btn-delete">Удалить</a>
+            </div>
+            {% endif %}
+
+            <div class="navigation-links">
+              <a href="/questions" class="btn-back">← Вернуться к списку вопросов</a>
+              
+              <div class="question-navigation">
+                {% if prev_task %}
+                <a href="/question/{{ prev_task.id }}" class="btn-nav">← Предыдущий</a>
+                {% else %}
+                <span class="btn-nav-disabled">← Предыдущий</span>
+                {% endif %}
+                
+                {% if next_task %}
+                <a href="/question/{{ next_task.id }}" class="btn-nav">Следующий →</a>
+                {% else %}
+                <span class="btn-nav-disabled">Следующий →</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+  <script>
+    function toggleAnswer(answerId) {
+      const content = document.getElementById(`content-${answerId}`);
+      const icon = document.getElementById(`icon-${answerId}`);
+
+      content.classList.toggle('expanded');
+      icon.classList.toggle('expanded');
+    }
+
+    // Автоматически разворачиваем первый ответ при загрузке (опционально)
+    // document.addEventListener('DOMContentLoaded', function() {
+    //   toggleAnswer('good-answer');
+    // });
+  </script>
+</body>
+</html>
