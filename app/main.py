@@ -94,6 +94,26 @@ def get_questions_page(request: Request, group_id: int = None, db: Session = Dep
         "is_admin": is_admin,
     })
 
+
+@app.get("/question/{task_id}")
+def get_question_detail_page(request: Request, task_id: int, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    """Страница с детальным просмотром вопроса"""
+    task = crud.get_task(db, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Вопрос не найден")
+    
+    subgroups = crud.get_task_subgroups(db)
+    groups = crud.get_task_groups(db)
+    is_admin = user.is_admin if user else False
+
+    return templates.TemplateResponse("question_detail.html", {
+        "request": request,
+        "task": task,
+        "subgroups": subgroups,
+        "groups": groups,
+        "is_admin": is_admin,
+    })
+
 @app.get("/add-question")
 def add_question_page(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
     """Страница для добавления нового вопроса - только для админов"""

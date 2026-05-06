@@ -69,40 +69,26 @@
           {% if tasks %}
             {% for task in tasks %}
             <div class="question-item" data-subgroup="{{ task.task_subgroup_id }}" data-group="{{ task.task_subgroup.task_group_id }}">
-              <div class="question-card">
-                <div class="question-header" onclick="toggleQuestion({{ task.id }})">
-                  <div class="question-title">
-                    {{ task.question }}
-                    <span class="category-badge">{{ task.task_subgroup.name }}</span>
-                    <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
-                  </div>
-                  <div class="toggle-icon" id="icon-{{ task.id }}">
-                    ▼
+              <a href="/question/{{ task.id }}" class="question-card-link">
+                <div class="question-card">
+                  <div class="question-header">
+                    <div class="question-title">
+                      {{ task.question }}
+                      <span class="category-badge">{{ task.task_subgroup.name }}</span>
+                      <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
+                    </div>
+                    <div class="toggle-icon">
+                      →
+                    </div>
                   </div>
                 </div>
-                <div class="question-content" id="content-{{ task.id }}">
-                  {% if task.description %}
-                  <div class="description">{{ task.description }}</div>
-                  {% endif %}
-
-                  <div class="answer-section">
-                    <div class="answer-good">{{ task.answer }}</div>
-                  </div>
-
-                  {% if task.failed_answer %}
-                  <div class="answer-section">
-                    <div class="answer-bad">{{ task.failed_answer }}</div>
-                  </div>
-                  {% endif %}
-                  
-                  {% if is_admin %}
-                  <div class="question-actions">
-                    <a href="/edit-question/{{ task.id }}" class="btn-edit">Редактировать</a>
-                    <a href="/delete-question/{{ task.id }}" class="btn-delete" style="text-decoration: none;">Удалить</a>
-                  </div>
-                  {% endif %}
-                </div>
+              </a>
+              {% if is_admin %}
+              <div class="question-admin-actions">
+                <a href="/edit-question/{{ task.id }}" class="btn-edit">Редактировать</a>
+                <a href="/delete-question/{{ task.id }}" class="btn-delete">Удалить</a>
               </div>
+              {% endif %}
             </div>
             {% endfor %}
           {% else %}
@@ -117,14 +103,6 @@
 
   <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
-    function toggleQuestion(taskId) {
-      const content = document.getElementById(`content-${taskId}`);
-      const icon = document.getElementById(`icon-${taskId}`);
-
-      content.classList.toggle('expanded');
-      icon.classList.toggle('expanded');
-    }
-
     function updateSubgroups() {
       const groupSelect = document.getElementById('group-select');
       const subgroupSelect = document.getElementById('subgroup-select');
