@@ -61,6 +61,22 @@ nav.sidebar {
   transition: transform 0.3s ease;
 }
 
+/* Desktop: sidebar always visible */
+@media (min-width: 769px) {
+  nav.sidebar {
+    transform: translateX(0);
+    position: fixed;
+  }
+  
+  main.with-sidebar {
+    margin-left: var(--sidebar-width);
+  }
+  
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
 .sidebar.active {
   transform: translateX(0);
 }
@@ -775,6 +791,57 @@ main {
   box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
 }
 
+/* Question navigation (prev/next) */
+.question-navigation {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: space-between;
+}
+
+.btn-nav {
+  display: inline-block;
+  padding: 12px 24px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-nav:hover {
+  background: linear-gradient(135deg, #357ABD 0%, #2868A8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.btn-nav-disabled {
+  display: inline-block;
+  padding: 12px 24px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #999;
+  background: #e0e0e0;
+  border-radius: 8px;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .question-navigation {
+    flex-direction: column;
+  }
+  
+  .btn-nav,
+  .btn-nav-disabled {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 @media (max-width: 768px) {
   .question-admin-actions {
     flex-direction: column;
@@ -792,5 +859,14 @@ main {
   .answer-toggle {
     font-size: 14px;
     padding: 12px 15px;
+  }
+  
+  .navigation-links {
+    flex-direction: column;
+  }
+  
+  .btn-back,
+  .question-navigation {
+    width: 100%;
   }
 }

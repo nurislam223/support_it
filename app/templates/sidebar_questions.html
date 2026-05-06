@@ -15,9 +15,9 @@
 <div class="sidebar-section">
   <h2 class="section-title">Группы вопросов</h2>
   <div class="nav-list">
-    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup('all')">Все вопросы</div>
+    <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
     {% for group in groups %}
-    <div class="nav-item" tabindex="0" role="button" onclick="filterByGroup({{ group.id }})">{{ group.name }}</div>
+    <a href="/questions?group_id={{ group.id }}" class="nav-item" tabindex="0">{{ group.name }}</a>
     {% endfor %}
   </div>
 </div>
@@ -35,17 +35,3 @@
 </div>
 
 <div class="footer-note">Хочу в IT</div>
-
-<script>
-  function filterByGroup(groupId) {
-    const groupSelect = document.getElementById('group-select');
-    groupSelect.value = groupId;
-    updateSubgroups();
-  }
-
-  function filterBySubgroup(subgroupId) {
-    const subgroupSelect = document.getElementById('subgroup-select');
-    subgroupSelect.value = subgroupId;
-    filterQuestions();
-  }
-</script>

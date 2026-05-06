@@ -89,6 +89,20 @@
 
             <div class="navigation-links">
               <a href="/questions" class="btn-back">← Вернуться к списку вопросов</a>
+              
+              <div class="question-navigation">
+                {% if prev_task %}
+                <a href="/question/{{ prev_task.id }}" class="btn-nav">← Предыдущий</a>
+                {% else %}
+                <span class="btn-nav-disabled">← Предыдущий</span>
+                {% endif %}
+                
+                {% if next_task %}
+                <a href="/question/{{ next_task.id }}" class="btn-nav">Следующий →</a>
+                {% else %}
+                <span class="btn-nav-disabled">Следующий →</span>
+                {% endif %}
+              </div>
             </div>
           </div>
         </div>
