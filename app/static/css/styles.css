@@ -47,8 +47,8 @@ body {
 /* Sidebar */
 nav.sidebar {
   width: var(--sidebar-width);
-  background: var(--color-white-solid);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@ nav.sidebar {
   height: 100vh;
   overflow-y: auto;
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Desktop: sidebar always visible */
@@ -83,6 +83,19 @@ nav.sidebar {
   font-weight: 400;
   line-height: 1.35;
   margin-bottom: 15px;
+  color: var(--color-grey-21);
+}
+
+/* Sidebar section styling for better visual separation */
+.sidebar-section {
+  padding: 8px 0;
+}
+
+.sidebar-section .nav-list {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-left: 5px;
 }
 
 /* Search */
@@ -95,18 +108,20 @@ nav.sidebar {
   width: 100%;
   height: 40px;
   padding: 10px 35px 10px 40px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 8px;
   font-family: 'Unbounded', sans-serif;
   font-size: 14px;
   color: var(--color-grey-46);
-  background: var(--color-white-solid);
-  transition: border-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .search-box input:focus {
   outline: none;
-  border-color: var(--color-black-solid);
+  border-color: var(--color-grey-21);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .search-box svg {
@@ -120,11 +135,13 @@ nav.sidebar {
 /* Nav */
 .section-title {
   font-family: 'Unbounded', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  margin: 20px 0 12px;
+  margin: 25px 0 10px;
   color: var(--color-grey-46);
+  letter-spacing: 0.5px;
+  padding-left: 10px;
 }
 
 .nav-list {
@@ -132,39 +149,43 @@ nav.sidebar {
 }
 
 .nav-item {
-  opacity: 0.8;
+  opacity: 0.75;
   font-family: 'Unbounded', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  padding: 12px 0;
+  padding: 10px 12px;
   cursor: pointer;
-  transition: opacity 0.2s ease;
-  border-bottom: 1px solid transparent;
-  background: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  background: transparent;
   border: none;
   text-align: left;
   width: 100%;
-  color: inherit;
+  color: var(--color-grey-21);
   text-decoration: none;
   display: block;
+  margin: 2px 0;
 }
 
 .nav-item:hover,
 .nav-item:focus {
   opacity: 1;
-  border-bottom-color: var(--color-black-solid);
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateX(3px);
 }
 
 .nav-item:active {
-  transform: scale(0.98);
+  transform: scale(0.98) translateX(3px);
 }
 
 .footer-note {
-  opacity: 0.6;
+  opacity: 0.5;
   font-family: 'Unbounded', sans-serif;
   font-size: 13px;
   margin-top: auto;
   padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  color: var(--color-grey-46);
 }
 
 /* Main content */
@@ -174,7 +195,14 @@ main {
   padding: 30px 0 40px;
   margin-left: 0;
   min-height: 100vh;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop: main content offset for sidebar */
+@media (min-width: 769px) {
+  main.with-sidebar {
+    margin-left: var(--sidebar-width);
+  }
 }
 
 /* Question Page Specific Styles */
@@ -603,6 +631,13 @@ main {
 
 @media (min-width: 769px) {
   main.with-sidebar { margin-left: var(--sidebar-width); }
+}
+
+/* Add subtle shadow to main content on desktop for depth */
+@media (min-width: 769px) {
+  main.with-sidebar {
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.04);
+  }
 }
 
 @media (max-width: 480px) {
