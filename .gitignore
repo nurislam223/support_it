@@ -1,45 +1,10 @@
-```gitignore
-# Compiled Python files
+```
+# Python
+__pycache__/
 *.pyc
-__pycache__/
+*.pyo
+*.pyd
 
-# Dependencies
-venv/
-.venv/
-.env
-.env.local
-
-# Editor/IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
-*.log
-
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Build/dist directories
-build/
-dist/
-*.egg-info/
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Cache directories
-.mypy_cache/
-.pytest_cache/
-__pycache__/
+# Static files
+app/static/css/styles.css
 ```
