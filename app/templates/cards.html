@@ -52,4 +52,26 @@
   function navigateToQuestions(groupId) {
     window.location.href = `/questions?group=${groupId}`;
   }
+
+  // Добавляем класс 'loaded' к изображениям после их загрузки
+  document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.card-image');
+    
+    images.forEach(function(img) {
+      // Если изображение уже загружено (из кэша)
+      if (img.complete) {
+        img.classList.add('loaded');
+      } else {
+        // Добавляем класс когда изображение загрузится
+        img.addEventListener('load', function() {
+          this.classList.add('loaded');
+        });
+        
+        // На случай ошибки загрузки - тоже показываем изображение
+        img.addEventListener('error', function() {
+          this.classList.add('loaded');
+        });
+      }
+    });
+  });
 </script>
