@@ -7,7 +7,7 @@
     {% for card in softs %}
       <article class="card">
         <div class="card-image-wrapper">
-          <img src="{{ card.image }}"
+          <img src="{{ url_for('static', path='/images/' + card.image) }}"
                alt="{{ card.name }}"
                class="card-image"
                loading="lazy">
@@ -31,7 +31,7 @@
     {% for card in hards %}
       <article class="card">
         <div class="card-image-wrapper">
-          <img src="{{ card.image }}"
+          <img src="{{ url_for('static', path='/images/' + card.image) }}"
                alt="{{ card.name }}"
                class="card-image"
                loading="lazy">
