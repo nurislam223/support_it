@@ -24,8 +24,15 @@
   padding: 0;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
@@ -36,12 +43,17 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 100vw;
 }
 
 .page {
   display: flex;
   min-height: 100vh;
   min-height: 100dvh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Sidebar */
@@ -196,6 +208,9 @@ main {
   margin-left: 0;
   min-height: 100vh;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Desktop: main content offset for sidebar */
@@ -209,6 +224,8 @@ main {
 .breadcrumb {
     padding: 20px 40px;
     background: var(--color-grey-21);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .breadcrumb-content {
@@ -229,6 +246,8 @@ main {
 .header {
     background: var(--color-grey-21);
     padding: 60px 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header-title {
@@ -243,11 +262,16 @@ main {
 .content {
     padding: 60px 40px;
     background: var(--color-azure-88);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .filters {
@@ -275,6 +299,9 @@ main {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     overflow: hidden;
     transition: transform 0.2s ease;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .question-item:hover {
@@ -288,6 +315,8 @@ main {
     align-items: center;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .question-title {
@@ -415,6 +444,8 @@ main {
   max-width: 1200px;
   margin: 0 auto 50px;
   padding: 0 clamp(20px, 4vw, 40px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
@@ -432,6 +463,7 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
   gap: clamp(20px, 3vw, 30px);
   width: 100%;
+  max-width: 100%;
 }
 
 .card {
@@ -443,6 +475,8 @@ main {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
 .card:hover {
@@ -732,12 +766,16 @@ main {
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   padding: 30px;
   margin-bottom: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .question-detail-header {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .question-detail-text {
@@ -747,14 +785,17 @@ main {
   font-weight: 400;
   line-height: 1.4;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .answer-blocks {
   margin-top: 30px;
+  width: 100%;
 }
 
 .answer-block {
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .answer-toggle {
