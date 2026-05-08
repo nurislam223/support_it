@@ -5,32 +5,9 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Compiled and build artifacts
-*.o
-*.obj
-*.so
-*.a
-*.dll
-*.exe
-*.out
-
-# Dependencies
-.venv/
-venv/
-node_modules/
-dist/
-build/
-.mypy_cache/
-.pytest_cache/
-.coverage
-coverage/
-htmlcov/
-
 # Logs and temp files
 *.log
 *.tmp
-*.swp
-*.swo
 
 # Environment
 .env
@@ -41,7 +18,7 @@ htmlcov/
 .vscode/
 .idea/
 
-# System
-.DS_Store
-Thumbs.db
+# Dependencies
+.venv/
+venv/
 ```

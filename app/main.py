@@ -133,6 +133,7 @@ def get_question_detail_page(request: Request, task_id: int, db: Session = Depen
         "is_admin": is_admin,
         "prev_task": prev_task,
         "next_task": next_task,
+        "current_user": user,
     })
 
 @app.get("/add-question")
