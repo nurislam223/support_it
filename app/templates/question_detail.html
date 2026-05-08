@@ -86,6 +86,18 @@
                 <span class="btn-nav-disabled">← Предыдущий</span>
                 {% endif %}
                 
+                <!-- Блок для отметки знания вопроса - между кнопками навигации -->
+                {% if current_user %}
+                <div class="knowledge-status-inline">
+                  <div class="knowledge-buttons">
+                    <button class="knowledge-btn know" onclick="setKnowledgeStatus('know')">✓ Знаю</button>
+                    <button class="knowledge-btn almost" onclick="setKnowledgeStatus('almost_know')">~ Почти знаю</button>
+                    <button class="knowledge-btn dont" onclick="setKnowledgeStatus('dont_know')">✗ Не знаю</button>
+                  </div>
+                  <div id="current-status" class="current-status"></div>
+                </div>
+                {% endif %}
+                
                 {% if next_task %}
                 <a href="/question/{{ next_task.id }}" class="btn-nav">Следующий →</a>
                 {% else %}
@@ -93,19 +105,6 @@
                 {% endif %}
               </div>
             </div>
-            
-            <!-- Блок для отметки знания вопроса -->
-            {% if current_user %}
-            <div class="knowledge-status-block">
-              <h3>Как вы знаете этот вопрос?</h3>
-              <div class="knowledge-buttons">
-                <button class="knowledge-btn know" onclick="setKnowledgeStatus('know')">✓ Знаю</button>
-                <button class="knowledge-btn almost" onclick="setKnowledgeStatus('almost_know')">~ Почти знаю</button>
-                <button class="knowledge-btn dont" onclick="setKnowledgeStatus('dont_know')">✗ Не знаю</button>
-              </div>
-              <div id="current-status" class="current-status"></div>
-            </div>
-            {% endif %}
           </div>
         </div>
       </div>
