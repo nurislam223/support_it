@@ -93,6 +93,19 @@
                 {% endif %}
               </div>
             </div>
+            
+            <!-- Блок для отметки знания вопроса -->
+            {% if current_user %}
+            <div class="knowledge-status-block">
+              <h3>Как вы знаете этот вопрос?</h3>
+              <div class="knowledge-buttons">
+                <button class="knowledge-btn know" onclick="setKnowledgeStatus('know')">✓ Знаю</button>
+                <button class="knowledge-btn almost" onclick="setKnowledgeStatus('almost_know')">~ Почти знаю</button>
+                <button class="knowledge-btn dont" onclick="setKnowledgeStatus('dont_know')">✗ Не знаю</button>
+              </div>
+              <div id="current-status" class="current-status"></div>
+            </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -109,10 +122,64 @@
       icon.classList.toggle('expanded');
     }
 
-    // Автоматически разворачиваем первый ответ при загрузке (опционально)
-    // document.addEventListener('DOMContentLoaded', function() {
-    //   toggleAnswer('good-answer');
-    // });
+    // Загрузка текущего статуса знания вопроса
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCurrentStatus();
+    });
+
+    async function loadCurrentStatus() {
+      try {
+        const response = await fetch('/api/question-progress/{{ task.id }}');
+        if (response.ok) {
+          const data = await response.json();
+          displayCurrentStatus(data.status);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки статуса:', error);
+      }
+    }
+
+    async function setKnowledgeStatus(status) {
+      try {
+        const response = await fetch('/api/question-progress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            task_id: {{ task.id }},
+            status: status
+          })
+        });
+        
+        if (response.ok) {
+          displayCurrentStatus(status);
+          // Визуально подсветим выбранную кнопку
+          document.querySelectorAll('.knowledge-btn').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          document.querySelector(`.knowledge-btn.${status === 'know' ? 'know' : status === 'almost_know' ? 'almost' : 'dont'}`).classList.add('active');
+        }
+      } catch (error) {
+        console.error('Ошибка обновления статуса:', error);
+      }
+    }
+
+    function displayCurrentStatus(status) {
+      const statusElement = document.getElementById('current-status');
+      let statusText = '';
+      
+      if (status === 'know') {
+        statusText = 'Вы отметили: ✓ Знаю';
+      } else if (status === 'almost_know') {
+        statusText = 'Вы отметили: ~ Почти знаю';
+      } else if (status === 'dont_know') {
+        statusText = 'Вы отметили: ✗ Не знаю';
+      }
+      
+      statusElement.textContent = statusText;
+      statusElement.style.display = 'block';
+    }
   </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ from app import models
 import uvicorn
 from app.database import SessionLocal, engine
 from app import crud
-from app.schemas import TaskCreate, TaskSubgroup, TaskGroup, UserCreate
+from app.schemas import TaskCreate, TaskSubgroup, TaskGroup, UserCreate, QuestionProgressCreate, GroupAnalytics
 from app.auth import create_access_token, verify_token, get_password_hash, verify_password, ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import timedelta
 import os
@@ -434,11 +434,62 @@ def profile_page(request: Request, db: Session = Depends(get_db), user: models.U
     if not user:
         return RedirectResponse(url="/login")
     
+    # Получаем аналитику по группам для пользователя
+    analytics = crud.get_user_analytics_by_group(db, user.id)
+    
     return templates.TemplateResponse("profile.html", {
         "request": request,
         "current_user": user,
         "is_admin": user.is_admin,
+        "analytics": analytics,
     })
+
+
+# API endpoints для прогресса знаний
+@app.post("/api/question-progress")
+def update_question_progress_api(
+    progress_data: QuestionProgressCreate,
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user_from_cookie)
+):
+    """API endpoint для обновления статуса знания вопроса"""
+    if not user:
+        raise HTTPException(status_code=401, detail="Требуется авторизация")
+    
+    try:
+        # Конвертируем статус из строки в enum
+        status = models.KnowledgeStatus(progress_data.status.value)
+        progress = crud.update_question_progress(db, user.id, progress_data.task_id, status)
+        return {"message": "Статус обновлен", "progress": progress}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/question-progress/{task_id}")
+def get_question_progress_api(
+    task_id: int,
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user_from_cookie)
+):
+    """API endpoint для получения статуса знания вопроса"""
+    if not user:
+        raise HTTPException(status_code=401, detail="Требуется авторизация")
+    
+    progress = crud.get_or_create_question_progress(db, user.id, task_id)
+    return progress
+
+
+@app.get("/api/analytics/by-group")
+def get_analytics_by_group_api(
+    db: Session = Depends(get_db),
+    user: models.User = Depends(get_current_user_from_cookie)
+):
+    """API endpoint для получения аналитики знаний по группам вопросов"""
+    if not user:
+        raise HTTPException(status_code=401, detail="Требуется авторизация")
+    
+    analytics = crud.get_user_analytics_by_group(db, user.id)
+    return analytics
 
 if __name__ == "__main__":
     uvicorn.run(

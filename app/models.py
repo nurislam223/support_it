@@ -1,9 +1,15 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, Enum as SQLEnum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import enum
 
 Base = declarative_base()
+
+class KnowledgeStatus(enum.Enum):
+    KNOW = "know"
+    ALMOST_KNOW = "almost_know"
+    DONT_KNOW = "dont_know"
 
 class User(Base):
     __tablename__ = 'users'
@@ -16,6 +22,9 @@ class User(Base):
 
     # Relationship с задачами (кто создал)
     tasks = relationship("Tasks", back_populates="creator")
+    
+    # Relationship с прогрессом знаний
+    question_progress = relationship("QuestionProgress", back_populates="user", cascade="all, delete-orphan")
 
 class TaskGroups(Base):
     __tablename__ = 'task_groups'
@@ -60,3 +69,21 @@ class Tasks(Base):
     
     # Relationship with User
     creator = relationship("User", back_populates="tasks")
+    
+    # Relationship с прогрессом знаний
+    progress = relationship("QuestionProgress", back_populates="task", cascade="all, delete-orphan")
+
+
+class QuestionProgress(Base):
+    __tablename__ = 'question_progress'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    task_id = Column(Integer, ForeignKey('tasks.id'), nullable=False)
+    status = Column(SQLEnum(KnowledgeStatus), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    user = relationship("User", back_populates="question_progress")
+    task = relationship("Tasks", back_populates="progress")

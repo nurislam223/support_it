@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-from app.models import Tasks, TaskSubgroups, TaskGroups, User
-from app.schemas import TaskCreate, TaskUpdate, UserCreate
+from app.models import Tasks, TaskSubgroups, TaskGroups, User, QuestionProgress, KnowledgeStatus
+from app.schemas import TaskCreate, TaskUpdate, UserCreate, QuestionProgressCreate
 from typing import List, Optional
 from app.auth import get_password_hash
 
@@ -83,3 +83,88 @@ def update_user_is_admin(db: Session, user_id: int, is_admin: bool) -> Optional[
         db.commit()
         db.refresh(db_user)
     return db_user
+
+
+# QuestionProgress CRUD operations
+def get_or_create_question_progress(db: Session, user_id: int, task_id: int) -> Optional[QuestionProgress]:
+    """Получить или создать прогресс для вопроса"""
+    progress = db.query(QuestionProgress).filter(
+        QuestionProgress.user_id == user_id,
+        QuestionProgress.task_id == task_id
+    ).first()
+    
+    if not progress:
+        progress = QuestionProgress(
+            user_id=user_id,
+            task_id=task_id,
+            status=KnowledgeStatus.DONT_KNOW
+        )
+        db.add(progress)
+        db.commit()
+        db.refresh(progress)
+    
+    return progress
+
+
+def update_question_progress(db: Session, user_id: int, task_id: int, status: KnowledgeStatus) -> Optional[QuestionProgress]:
+    """Обновить статус знания вопроса"""
+    progress = db.query(QuestionProgress).filter(
+        QuestionProgress.user_id == user_id,
+        QuestionProgress.task_id == task_id
+    ).first()
+    
+    if not progress:
+        progress = QuestionProgress(
+            user_id=user_id,
+            task_id=task_id,
+            status=status
+        )
+        db.add(progress)
+    else:
+        progress.status = status
+    
+    db.commit()
+    db.refresh(progress)
+    return progress
+
+
+def get_user_analytics_by_group(db: Session, user_id: int) -> List[dict]:
+    """Получить аналитику знаний пользователя по группам вопросов"""
+    from sqlalchemy import func
+    
+    # Получаем все группы
+    groups = db.query(TaskGroups).all()
+    
+    analytics = []
+    for group in groups:
+        # Получаем все вопросы в этой группе
+        group_tasks = db.query(Tasks).join(TaskSubgroups).filter(
+            TaskSubgroups.task_group_id == group.id
+        ).all()
+        
+        total_questions = len(group_tasks)
+        
+        if total_questions == 0:
+            continue
+        
+        # Получаем прогресс пользователя по этим вопросам
+        task_ids = [task.id for task in group_tasks]
+        progress_list = db.query(QuestionProgress).filter(
+            QuestionProgress.user_id == user_id,
+            QuestionProgress.task_id.in_(task_ids)
+        ).all()
+        
+        know_count = sum(1 for p in progress_list if p.status == KnowledgeStatus.KNOW)
+        almost_know_count = sum(1 for p in progress_list if p.status == KnowledgeStatus.ALMOST_KNOW)
+        dont_know_count = sum(1 for p in progress_list if p.status == KnowledgeStatus.DONT_KNOW)
+        
+        analytics.append({
+            "group_id": group.id,
+            "group_name": group.name,
+            "total_questions": total_questions,
+            "know_count": know_count,
+            "almost_know_count": almost_know_count,
+            "dont_know_count": dont_know_count
+        })
+    
+    return analytics

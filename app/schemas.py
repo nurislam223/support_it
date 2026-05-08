@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Enum
 from typing import Optional
 from datetime import datetime
 
@@ -63,3 +63,36 @@ class TaskUpdate(BaseModel):
     failed_answer: Optional[str] = None
     description: Optional[str] = None
     task_subgroup_id: Optional[int] = None
+
+
+# Schemas для прогресса знаний
+class KnowledgeStatusEnum(str, Enum):
+    KNOW = "know"
+    ALMOST_KNOW = "almost_know"
+    DONT_KNOW = "dont_know"
+
+
+class QuestionProgressCreate(BaseModel):
+    task_id: int
+    status: KnowledgeStatusEnum
+
+
+class QuestionProgressResponse(BaseModel):
+    id: int
+    user_id: int
+    task_id: int
+    status: KnowledgeStatusEnum
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class GroupAnalytics(BaseModel):
+    group_id: int
+    group_name: str
+    total_questions: int
+    know_count: int
+    almost_know_count: int
+    dont_know_count: int

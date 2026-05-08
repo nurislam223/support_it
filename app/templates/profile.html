@@ -80,6 +80,233 @@
     .back-link:hover {
       text-decoration: underline;
     }
+    
+    /* Стили для блока отметки знания вопроса */
+    .knowledge-status-block {
+      margin-top: 30px;
+      padding: 25px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    
+    .knowledge-status-block h3 {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .knowledge-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .knowledge-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 20px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .knowledge-btn.know {
+      background: #d4edda;
+      color: #155724;
+      border-color: #c3e6cb;
+    }
+    
+    .knowledge-btn.know:hover,
+    .knowledge-btn.know.active {
+      background: #28a745;
+      color: white;
+      border-color: #28a745;
+      transform: translateY(-2px);
+    }
+    
+    .knowledge-btn.almost {
+      background: #fff3cd;
+      color: #856404;
+      border-color: #ffeaa7;
+    }
+    
+    .knowledge-btn.almost:hover,
+    .knowledge-btn.almost.active {
+      background: #ffc107;
+      color: white;
+      border-color: #ffc107;
+      transform: translateY(-2px);
+    }
+    
+    .knowledge-btn.dont {
+      background: #f8d7da;
+      color: #721c24;
+      border-color: #f5c6cb;
+    }
+    
+    .knowledge-btn.dont:hover,
+    .knowledge-btn.dont.active {
+      background: #dc3545;
+      color: white;
+      border-color: #dc3545;
+      transform: translateY(-2px);
+    }
+    
+    .current-status {
+      margin-top: 15px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+      color: #666;
+      display: none;
+    }
+    
+    /* Стили для аналитики в профиле */
+    .analytics-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .analytics-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 25px;
+    }
+    
+    .analytics-grid {
+      display: grid;
+      gap: 20px;
+    }
+    
+    .analytics-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .analytics-card:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .analytics-group-name {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    
+    .analytics-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .stat-label {
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .stat-value {
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .stat-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+    
+    .stat-item-small {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 13px;
+    }
+    
+    .stat-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .stat-indicator.know {
+      background: #28a745;
+    }
+    
+    .stat-indicator.almost {
+      background: #ffc107;
+    }
+    
+    .stat-indicator.dont {
+      background: #dc3545;
+    }
+    
+    .progress-bar-container {
+      margin-top: 10px;
+    }
+    
+    .progress-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #e0e0e0;
+    }
+    
+    .progress-segment {
+      height: 100%;
+    }
+    
+    .progress-segment.know {
+      background: #28a745;
+    }
+    
+    .progress-segment.almost {
+      background: #ffc107;
+    }
+    
+    .progress-segment.dont {
+      background: #dc3545;
+    }
+    
+    .no-analytics {
+      font-family: 'Ubuntu', sans-serif;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -108,6 +335,53 @@
               <span class="field-label">Дата регистрации:</span>
               <span class="field-value">{{ current_user.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
             </div>
+          </div>
+          
+          <!-- Аналитика знаний по группам -->
+          <div class="analytics-section">
+            <h2 class="analytics-title">Аналитика знаний по группам</h2>
+            
+            {% if analytics and analytics|length > 0 %}
+            <div class="analytics-grid">
+              {% for item in analytics %}
+              <div class="analytics-card">
+                <h3 class="analytics-group-name">{{ item.group_name }}</h3>
+                <div class="analytics-stats">
+                  <div class="stat-item">
+                    <span class="stat-label">Всего вопросов:</span>
+                    <span class="stat-value">{{ item.total_questions }}</span>
+                  </div>
+                  <div class="stat-row">
+                    <div class="stat-item-small">
+                      <span class="stat-indicator know"></span>
+                      <span class="stat-text">Знаю: {{ item.know_count }}</span>
+                    </div>
+                    <div class="stat-item-small">
+                      <span class="stat-indicator almost"></span>
+                      <span class="stat-text">Почти: {{ item.almost_know_count }}</span>
+                    </div>
+                    <div class="stat-item-small">
+                      <span class="stat-indicator dont"></span>
+                      <span class="stat-text">Не знаю: {{ item.dont_know_count }}</span>
+                    </div>
+                  </div>
+                  <!-- Прогресс бар -->
+                  <div class="progress-bar-container">
+                    <div class="progress-bar">
+                      {% if item.total_questions > 0 %}
+                      <div class="progress-segment know" style="width: {{ (item.know_count / item.total_questions) * 100 }}%;"></div>
+                      <div class="progress-segment almost" style="width: {{ (item.almost_know_count / item.total_questions) * 100 }}%;"></div>
+                      <div class="progress-segment dont" style="width: {{ (item.dont_know_count / item.total_questions) * 100 }}%;"></div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-analytics">Пока нет данных для аналитики. Отметьте несколько вопросов!</p>
+            {% endif %}
           </div>
           
           <button onclick="logout()" class="btn-logout">Выйти</button>
