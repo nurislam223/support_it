@@ -871,6 +871,81 @@ main {
   gap: 10px;
   margin-top: 15px;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Knowledge status inline - between navigation buttons */
+.knowledge-status-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.knowledge-status-inline .knowledge-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.knowledge-status-inline .knowledge-btn {
+  padding: 8px 14px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  white-space: nowrap;
+}
+
+.knowledge-status-inline .knowledge-btn.know {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+}
+
+.knowledge-status-inline .knowledge-btn.know:hover {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.knowledge-status-inline .knowledge-btn.almost {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #333;
+}
+
+.knowledge-status-inline .knowledge-btn.almost:hover {
+  background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.knowledge-status-inline .knowledge-btn.dont {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.knowledge-status-inline .knowledge-btn.dont:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.knowledge-status-inline .knowledge-btn.active {
+  outline: 3px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+.knowledge-status-inline .current-status {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 12px;
+  color: var(--color-grey-21);
+  text-align: center;
+  display: none;
 }
 
 .btn-nav {
@@ -904,15 +979,111 @@ main {
   cursor: not-allowed;
 }
 
+/* Knowledge status block */
+.knowledge-status-block {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.knowledge-status-block h3 {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-black-solid);
+  margin-bottom: 15px;
+}
+
+.knowledge-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.knowledge-btn {
+  padding: 12px 24px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.knowledge-btn.know {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+}
+
+.knowledge-btn.know:hover {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.knowledge-btn.almost {
+  background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+  color: #333;
+}
+
+.knowledge-btn.almost:hover {
+  background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.knowledge-btn.dont {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.knowledge-btn.dont:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.knowledge-btn.active {
+  outline: 3px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+.current-status {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 14px;
+  color: var(--color-grey-21);
+  display: none;
+}
+
 @media (max-width: 768px) {
   .question-navigation {
     flex-direction: column;
+    align-items: stretch;
   }
   
   .btn-nav,
   .btn-nav-disabled {
     width: 100%;
     text-align: center;
+  }
+  
+  .knowledge-status-inline {
+    order: -1;
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  
+  .knowledge-status-inline .knowledge-buttons {
+    justify-content: center;
+  }
+  
+  .knowledge-status-inline .knowledge-btn {
+    padding: 10px 18px;
+    font-size: 14px;
   }
 }
 
