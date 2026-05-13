@@ -1,8 +1,7 @@
 <!-- templates/sidebar_questions.html -->
 <div class="sidebar-header">
-  <h1 class="sidebar-title">База вопросов</h1>
+  <h1 href="/" class="nav-item" tabindex="0">База вопросов</h1>
 </div>
-<a href="/" class="nav-item" tabindex="0">Главная страница</a>
 <div class="sidebar-section">
   <div class="nav-list">
     <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
@@ -13,12 +12,24 @@
 </div>
 
 <div class="sidebar-section">
-  <h2 class="section-title">Быстрый доступ</h2>
+  {% if is_admin %}
+  <h2 class="section-title">Управление</h2>
   <div class="nav-list">
-    <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
-    {% if is_admin %}
     <a href="/add-question" class="nav-item" tabindex="0">Добавить вопрос</a>
     <a href="/manage-questions" class="nav-item" tabindex="0">Управление вопросами</a>
-    {% endif %}
   </div>
+  {% endif %}
 </div>
+
+<div class="sidebar-section" style="margin-top: 30px;">
+    <h2 class="section-title">Авторизация</h2>
+    <div class="nav-list">
+      {% if current_user %}
+      <a href="/profile" class="nav-item" tabindex="0">Профиль</a>
+      <a href="#" class="nav-item" tabindex="0" id="logoutBtn">Выйти</a>
+      {% else %}
+      <a href="/login" class="nav-item" tabindex="0">Войти</a>
+      <a href="/register" class="nav-item" tabindex="0">Регистрация</a>
+      {% endif %}
+    </div>
+  </div>
