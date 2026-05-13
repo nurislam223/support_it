@@ -1,11 +1,9 @@
 <!-- templates/sidebar_questions.html -->
 <div class="sidebar-header">
   <h1 class="sidebar-title">База вопросов</h1>
-  <p class="sidebar-subtitle">IT обучение и подготовка</p>
 </div>
-
+<a href="/" class="nav-item" tabindex="0">Главная страница</a>
 <div class="sidebar-section">
-  <h2 class="section-title">Группы вопросов</h2>
   <div class="nav-list">
     <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
     {% for group in groups %}
@@ -17,7 +15,6 @@
 <div class="sidebar-section">
   <h2 class="section-title">Быстрый доступ</h2>
   <div class="nav-list">
-    <a href="/" class="nav-item" tabindex="0">Главная страница</a>
     <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
     {% if is_admin %}
     <a href="/add-question" class="nav-item" tabindex="0">Добавить вопрос</a>
@@ -25,5 +22,3 @@
     {% endif %}
   </div>
 </div>
-
-<div class="footer-note">Хочу в IT</div>

@@ -1,9 +1,8 @@
 <!-- templates/sidebar.html -->
 <div>
   <h1>База<br>вопросов</h1>
-
+<a href="/" class="nav-item" tabindex="0">Главная страница</a>
   <div class="sidebar-section">
-    <h2 class="section-title">Группы вопросов</h2>
     <div class="nav-list">
       <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
       {% for group in groups %}
@@ -35,8 +34,6 @@
     </div>
   </div>
 </div>
-
-<div class="footer-note">Хочу в IT</div>
 
 {% if current_user %}
 <script>
