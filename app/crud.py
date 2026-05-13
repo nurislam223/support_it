@@ -4,10 +4,10 @@ from app.schemas import TaskCreate, TaskUpdate, UserCreate, QuestionProgressCrea
 from typing import List, Optional
 from app.auth import get_password_hash
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100) -> List[Tasks]:
+def get_tasks(db: Session, skip: int = 0) -> List[Tasks]:
     return db.query(Tasks).options(
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
-    ).offset(skip).limit(limit).all()
+    ).offset(skip).all()
 
 def get_task(db: Session, task_id: int) -> Optional[Tasks]:
     return db.query(Tasks).options(
