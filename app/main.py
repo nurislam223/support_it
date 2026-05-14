@@ -61,14 +61,18 @@ def require_admin(user: models.User = Depends(get_current_user_from_cookie)):
 @app.get("/")
 def home(request: Request, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
     groups = db.query(models.TaskGroups).all()
-
-    softs = db.query(models.TaskGroups) \
-        .filter(models.TaskGroups.id.in_([1, 2])) \
-        .all()
-
-    hards = db.query(models.TaskGroups) \
-        .filter(models.TaskGroups.id.in_([6, 7, 8])) \
-        .all()
+    
+    # Получаем все группы с количеством вопросов в каждой
+    all_groups_with_counts = []
+    for group in groups:
+        questions_count = len(crud.get_tasks_by_group(db, group.id))
+        all_groups_with_counts.append({
+            "id": group.id,
+            "name": group.name,
+            "description": group.description,
+            "image": group.image,
+            "questions_count": questions_count
+        })
 
     is_admin = user.is_admin if user else False
 
@@ -77,8 +81,7 @@ def home(request: Request, db: Session = Depends(get_db), user: models.User = De
         {
             "request": request,
             "groups": groups,
-            "softs": softs,
-            "hards": hards,
+            "all_groups": all_groups_with_counts,
             "is_admin": is_admin,
             "current_user": user,
         }

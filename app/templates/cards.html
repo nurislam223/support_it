@@ -1,10 +1,9 @@
 <!-- templates/cards.html -->
 
-<!-- Софты 💬 -->
-<section class="section" aria-labelledby="softs-header">
-  <h2 class="section-header" id="softs-header">Софты 💬</h2>
+<!-- Все категории -->
+<section class="section" aria-labelledby="all-categories-header">
   <div class="cards-grid">
-    {% for card in softs %}
+    {% for card in all_groups %}
       <article class="card">
         <div class="card-image-wrapper">
           <img src="{{ url_for('static', path='/images/' + card.image) }}"
@@ -16,31 +15,7 @@
           <h3 class="card-title">{{ card.name | safe }}</h3>
           <p class="card-text">{{ card.description }}</p>
           <div class="card-actions">
-            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">Изучить</button>
-          </div>
-        </div>
-      </article>
-    {% endfor %}
-  </div>
-</section>
-
-<!-- Харды ⚙️ -->
-<section class="section" aria-labelledby="hards-header">
-  <h2 class="section-header" id="hards-header">Харды ⚙️</h2>
-  <div class="cards-grid">
-    {% for card in hards %}
-      <article class="card">
-        <div class="card-image-wrapper">
-          <img src="{{ url_for('static', path='/images/' + card.image) }}"
-               alt="{{ card.name }}"
-               class="card-image"
-               loading="lazy">
-        </div>
-        <div class="card-content">
-          <h3 class="card-title">{{ card.name | safe }}</h3>
-          <p class="card-text">{{ card.description }}</p>
-          <div class="card-actions">
-            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">Изучить</button>
+            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">{{ card.questions_count }} вопросов</button>
           </div>
         </div>
       </article>
