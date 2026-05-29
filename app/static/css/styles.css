@@ -179,7 +179,11 @@ nav.sidebar {
   margin: 2px 0;
 }
 
-.nav-item:hover,
+.nav-item:hover {
+  transform: scale(1.05) translateX(3px);
+  transform-origin: left center;
+}
+
 .nav-item:focus {
   opacity: 1;
   background: rgba(0, 0, 0, 0.04);
