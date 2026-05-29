@@ -21,14 +21,12 @@
     <main id="mainContent">
       <div class="breadcrumb">
         <div class="breadcrumb-content">
-          <div class="breadcrumb-item">Все вопросы</div>
-          <div class="breadcrumb-arrow">→</div>
           <div class="breadcrumb-item" id="current-category">Все категории</div>
         </div>
       </div>
 
       <div class="header">
-        <h1 class="header-title">Вопросы для собеседований</h1>
+        <h1 class="header-title" id="page-title">Вопросы для собеседований</h1>
       </div>
 
       <div class="content">
@@ -123,6 +121,7 @@
       const selectedSubgroup = subgroupSelect.value;
       const questions = document.querySelectorAll('.question-item');
       const breadcrumb = document.getElementById('current-category');
+      const pageTitle = document.getElementById('page-title');
 
       let categoryName = 'Все категории';
       if (selectedSubgroup !== 'all') {
@@ -134,6 +133,7 @@
       }
 
       breadcrumb.textContent = categoryName;
+      pageTitle.textContent = categoryName;
 
       questions.forEach(question => {
         const questionGroup = question.dataset.group;
@@ -159,7 +159,9 @@
       // Если group_id передан, применяем фильтр сразу
       const groupId = "{{ group_id }}";
       if (groupId && groupId !== "None") {
-        filterByGroup(parseInt(groupId));
+        const groupSelect = document.getElementById('group-select');
+        groupSelect.value = groupId;
+        updateSubgroups();
       }
     });
   </script>
