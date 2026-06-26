@@ -28,21 +28,28 @@
       </div>
 
       <div class="header">
-        <h1 class="header-title">Вопрос</h1>
+        <h1 class="header-title">{{ task.question }}</h1>
       </div>
 
       <div class="content">
         <div class="container">
           <div class="question-detail-card">
             <div class="question-detail-header">
-              <span class="category-badge">{{ task.task_subgroup.name }}</span>
-              <span class="group-badge">{{ task.task_subgroup.task_group.name }}</span>
+              <a href="/questions?group_id={{ task.task_subgroup.task_group.id }}" class="category-badge">{{ task.task_subgroup.task_group.name }}</a>
             </div>
             
             <h2 class="question-detail-text">{{ task.question }}</h2>
             
             {% if task.description %}
-            <div class="description">{{ task.description }}</div>
+            <div class="answer-block description-block">
+              <button class="answer-toggle" onclick="toggleAnswer('about-question')">
+                <span class="toggle-text">О чем вопрос</span>
+                <span class="toggle-icon-small" id="icon-about-question">▼</span>
+              </button>
+              <div class="answer-content" id="content-about-question">
+                <div class="description">{{ task.description }}</div>
+              </div>
+            </div>
             {% endif %}
 
             <div class="answer-blocks">
@@ -117,8 +124,10 @@
       const content = document.getElementById(`content-${answerId}`);
       const icon = document.getElementById(`icon-${answerId}`);
 
-      content.classList.toggle('expanded');
-      icon.classList.toggle('expanded');
+      if (content && icon) {
+        content.classList.toggle('expanded');
+        icon.classList.toggle('expanded');
+      }
     }
 
     // Загрузка текущего статуса знания вопроса

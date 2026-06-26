@@ -394,6 +394,37 @@ main {
     border-left: 4px solid #dc3545;
 }
 
+/* Вкладка О чем вопрос */
+.answer-block.description-block {
+    margin-bottom: 20px;
+    margin-top: 10px;
+    background: #f0f7ff;
+    border-radius: 8px;
+    border: 1px solid #d9e8fc;
+}
+
+.answer-block.description-block .answer-toggle {
+    background: #e0efff;
+    border-color: #cde0f9;
+}
+
+.answer-block.description-block .answer-content {
+    background: transparent;
+}
+
+.answer-block.description-block .description {
+    background: transparent;
+    border-left: 4px solid #4a90e2;
+    margin: 0;
+    padding: 15px 20px;
+    border-radius: 0;
+}
+
+/* Отступ между блоками ответов */
+.answer-blocks .answer-block {
+    margin-top: 15px;
+}
+
 .category-badge {
     display: inline-block;
     padding: 4px 12px;

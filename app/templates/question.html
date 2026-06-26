@@ -86,7 +86,6 @@
     </main>
   </div>
 
-  <script src="{{ url_for('static', path='/js/main.js') }}"></script>
   <script>
     function updateSubgroups() {
       const groupSelect = document.getElementById('group-select');
@@ -110,6 +109,7 @@
         }
       }
 
+      // Фильтруем вопросы сразу после обновления подгрупп
       filterQuestions();
     }
 
@@ -119,7 +119,9 @@
       const selectedGroup = groupSelect.value;
       const selectedSubgroup = subgroupSelect.value;
       const questions = document.querySelectorAll('.question-item');
-      const breadcrumb = document.getElementById('current-category');
+      
+      // breadcrumb не существует, поэтому просто обновляем заголовок
+      // const breadcrumb = document.getElementById('current-category');
       const pageTitle = document.getElementById('page-title');
 
       let categoryName = 'Все категории';
@@ -131,9 +133,10 @@
         categoryName = selectedOption.text;
       }
 
-      breadcrumb.textContent = categoryName;
+      // breadcrumb.textContent = categoryName;
       pageTitle.textContent = categoryName;
 
+      let visibleCount = 0;
       questions.forEach(question => {
         const questionGroup = question.dataset.group;
         const questionSubgroup = question.dataset.subgroup;
@@ -149,7 +152,14 @@
         }
 
         question.style.display = shouldShow ? 'block' : 'none';
+        if (shouldShow) visibleCount++;
       });
+
+      // Обновляем счетчик видимых вопросов
+      const statsNumber = document.querySelector('.stats-number');
+      if (statsNumber) {
+        statsNumber.textContent = visibleCount;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -157,10 +167,16 @@
       
       // Если group_id передан, применяем фильтр сразу
       const groupId = "{{ group_id }}";
-      if (groupId && groupId !== "None") {
+      if (groupId && groupId !== "None" && groupId !== "") {
         const groupSelect = document.getElementById('group-select');
-        groupSelect.value = groupId;
-        updateSubgroups();
+        const subgroupSelect = document.getElementById('subgroup-select');
+        // Устанавливаем значение после загрузки всех опций
+        setTimeout(() => {
+          groupSelect.value = groupId;
+          updateSubgroups();
+          // Явно вызываем фильтрацию после того как обновились подгруппы
+          filterQuestions();
+        }, 10);
       }
     });
   </script>

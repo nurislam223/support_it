@@ -89,7 +89,11 @@ def home(request: Request, db: Session = Depends(get_db), user: models.User = De
 
 @app.get("/questions")
 def get_questions_page(request: Request, group_id: int = None, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
-    tasks = crud.get_tasks(db)
+    # Если указан group_id, фильтруем вопросы по группе
+    if group_id:
+        tasks = crud.get_tasks_by_group(db, int(group_id))
+    else:
+        tasks = crud.get_tasks(db)
     subgroups = crud.get_task_subgroups(db)
     groups = crud.get_task_groups(db)
     
