@@ -243,6 +243,11 @@ main {
     font-size: 16px;
 }
 
+/* Сброс стилей для страницы вопросов */
+#mainContent > div.breadcrumb > div > div.breadcrumb-item {
+    display: none;
+}
+
 .breadcrumb-arrow {
     color: var(--color-grey-46);
 }
