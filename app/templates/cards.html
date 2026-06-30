@@ -15,7 +15,11 @@
           <h3 class="card-title">{{ card.name | safe }}</h3>
           <p class="card-text">{{ card.description }}</p>
           <div class="card-actions">
-            <button class="btn btn-primary" onclick="navigateToQuestions({{ card.id }})">{{ card.questions_count }} вопросов</button>
+            <button class="btn btn-primary"
+                    data-count="{{ card.questions_count }}"
+                    onclick="navigateToQuestions({{ card.id }})">
+              <span class="questions-count-text"></span>
+            </button>
           </div>
         </div>
       </article>
@@ -28,25 +32,53 @@
     window.location.href = `/questions?group_id=${groupId}`;
   }
 
-  // Добавляем класс 'loaded' к изображениям после их загрузки
-  document.addEventListener('DOMContentLoaded', function() {
+  // Склонение числительных в русском языке
+  function pluralRu(n, forms) {
+    // forms: [1, 2-4, 5-20]
+    // Пример: ['вопрос', 'вопроса', 'вопросов']
+    n = Math.abs(n) % 100;
+    const n1 = n % 10;
+
+    if (n >= 11 && n <= 19) return forms[2];
+    if (n1 === 1) return forms[0];
+    if (n1 >= 2 && n1 <= 4) return forms[1];
+    return forms[2];
+  }
+
+  // Обновление текста в элементе по количеству
+  function updateQuestionsText(element, count) {
+    const textEl = element.querySelector('.questions-count-text');
+    if (!textEl) return;
+    textEl.textContent = `${count} ${pluralRu(count, ['вопрос', 'вопроса', 'вопросов'])}`;
+    element.dataset.count = count;
+  }
+
+  // Инициализация при загрузке страницы
+  document.addEventListener('DOMContentLoaded', function () {
+    // Обработка кнопок с количеством вопросов
+    document.querySelectorAll('button[data-count]').forEach(btn => {
+      const count = parseInt(btn.dataset.count, 10);
+      if (!isNaN(count)) updateQuestionsText(btn, count);
+    });
+
+    // Добавляем класс 'loaded' к изображениям после их загрузки
     const images = document.querySelectorAll('.card-image');
-    
-    images.forEach(function(img) {
-      // Если изображение уже загружено (из кэша)
+    images.forEach(function (img) {
       if (img.complete) {
         img.classList.add('loaded');
       } else {
-        // Добавляем класс когда изображение загрузится
-        img.addEventListener('load', function() {
+        img.addEventListener('load', function () {
           this.classList.add('loaded');
         });
-        
-        // На случай ошибки загрузки - тоже показываем изображение
-        img.addEventListener('error', function() {
+        img.addEventListener('error', function () {
           this.classList.add('loaded');
         });
       }
     });
   });
+
+  // Экспортируем функции глобально, чтобы их можно было вызывать
+  // при динамическом изменении количества вопросов извне
+  window.updateQuestionsText = updateQuestionsText;
+  window.pluralRu = pluralRu;
 </script>
