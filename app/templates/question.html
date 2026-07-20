@@ -31,8 +31,11 @@
       <div class="content">
         <div class="container">
           <div class="stats">
-            <div class="stats-number">{{ tasks|length }}</div>
-            <div class="stats-label">всего вопросов</div>
+            {% set n = tasks | length %}
+            <div class="stats-number">{{ n }}</div>
+            <div class="stats-label">
+              всего {% if n % 10 == 1 and n % 100 != 11 %}вопрос{% elif n % 10 >= 2 and n % 10 <= 4 and (n % 100 < 10 or n % 100 >= 20) %}вопроса{% else %}вопросов{% endif %}
+            </div>
           </div>
 
           <div class="filters">
@@ -119,9 +122,7 @@
       const selectedGroup = groupSelect.value;
       const selectedSubgroup = subgroupSelect.value;
       const questions = document.querySelectorAll('.question-item');
-      
-      // breadcrumb не существует, поэтому просто обновляем заголовок
-      // const breadcrumb = document.getElementById('current-category');
+
       const pageTitle = document.getElementById('page-title');
 
       let categoryName = 'Все категории';
@@ -133,7 +134,6 @@
         categoryName = selectedOption.text;
       }
 
-      // breadcrumb.textContent = categoryName;
       pageTitle.textContent = categoryName;
 
       let visibleCount = 0;
@@ -155,21 +155,31 @@
         if (shouldShow) visibleCount++;
       });
 
-      // Обновляем счетчик видимых вопросов
+      // Обновляем счетчик видимых вопросов с правильным склонением
       const statsNumber = document.querySelector('.stats-number');
+      const statsLabel = document.querySelector('.stats-label');
+
       if (statsNumber) {
         statsNumber.textContent = visibleCount;
+      }
+      if (statsLabel) {
+        let word = 'вопросов';
+        if (visibleCount % 10 === 1 && visibleCount % 100 !== 11) {
+          word = 'вопрос';
+        } else if (visibleCount % 10 >= 2 && visibleCount % 10 <= 4 && (visibleCount % 100 < 10 || visibleCount % 100 >= 20)) {
+          word = 'вопроса';
+        }
+        statsLabel.textContent = `всего ${word}`;
       }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
       updateSubgroups();
-      
+
       // Если group_id передан, применяем фильтр сразу
       const groupId = "{{ group_id }}";
       if (groupId && groupId !== "None" && groupId !== "") {
         const groupSelect = document.getElementById('group-select');
-        const subgroupSelect = document.getElementById('subgroup-select');
         // Устанавливаем значение после загрузки всех опций
         setTimeout(() => {
           groupSelect.value = groupId;
