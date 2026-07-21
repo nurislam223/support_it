@@ -18,7 +18,7 @@
       {% include 'sidebar_questions.html' %}
     </nav>
 
-    <main id="mainContent">
+    <main id="mainContent" class="with-sidebar">
       <div class="breadcrumb">
         <div class="breadcrumb-content">
         </div>
@@ -39,7 +39,7 @@
           </div>
 
           <div class="filters">
-            <select id="group-select" class="filter-select" onchange="updateSubgroups()">
+            <select id="group-select" class="filter-select" onchange="updateGroup(this.value)">
               <option value="all">Все группы</option>
               {% for group in groups %}
               <option value="{{ group.id }}" {% if group_id and group_id == group.id %}selected{% endif %}>{{ group.name }}</option>
@@ -90,92 +90,28 @@
   </div>
 
   <script>
-    function updateSubgroups() {
-      const groupSelect = document.getElementById('group-select');
-      const subgroupSelect = document.getElementById('subgroup-select');
-      const selectedGroup = groupSelect.value;
-
-      for (let option of subgroupSelect.options) {
-        if (option.value === 'all') continue;
-
-        if (selectedGroup === 'all' || option.dataset.group === selectedGroup) {
-          option.style.display = 'block';
-        } else {
-          option.style.display = 'none';
-        }
+    function updateGroup(groupValue) {
+      if (groupValue === 'all') {
+        window.location.href = '/questions';
+      } else {
+        window.location.href = '/questions?group_id=' + groupValue;
       }
-
-      if (selectedGroup !== 'all' && subgroupSelect.value !== 'all') {
-        const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
-        if (selectedOption.dataset.group !== selectedGroup) {
-          subgroupSelect.value = 'all';
-        }
-      }
-
-      // Фильтруем вопросы сразу после обновления подгрупп
-      filterQuestions();
     }
-
+    
     function filterQuestions() {
-      const groupSelect = document.getElementById('group-select');
-      const subgroupSelect = document.getElementById('subgroup-select');
-      const selectedGroup = groupSelect.value;
-      const selectedSubgroup = subgroupSelect.value;
-      const questions = document.querySelectorAll('.question-item');
-
-      const pageTitle = document.getElementById('page-title');
-
-      let categoryName = 'Все категории';
-      if (selectedSubgroup !== 'all') {
-        const selectedOption = subgroupSelect.options[subgroupSelect.selectedIndex];
-        categoryName = selectedOption.text;
-      } else if (selectedGroup !== 'all') {
-        const selectedOption = groupSelect.options[groupSelect.selectedIndex];
-        categoryName = selectedOption.text;
+      // При изменении подгруппы тоже перезагружаем страницу с новым URL
+      const groupValue = document.getElementById('group-select').value;
+      const subgroupValue = document.getElementById('subgroup-select').value;
+      
+      let url = '/questions';
+      if (groupValue !== 'all') {
+        url += '?group_id=' + groupValue;
       }
-
-      pageTitle.textContent = categoryName;
-
-      let visibleCount = 0;
-      questions.forEach(question => {
-        const questionGroup = question.dataset.group;
-        const questionSubgroup = question.dataset.subgroup;
-
-        let shouldShow = true;
-
-        if (selectedGroup !== 'all' && questionGroup !== selectedGroup) {
-          shouldShow = false;
-        }
-
-        if (selectedSubgroup !== 'all' && questionSubgroup !== selectedSubgroup) {
-          shouldShow = false;
-        }
-
-        question.style.display = shouldShow ? 'block' : 'none';
-        if (shouldShow) visibleCount++;
-      });
-
-      // Обновляем счетчик видимых вопросов с правильным склонением
-      const statsNumber = document.querySelector('.stats-number');
-      const statsLabel = document.querySelector('.stats-label');
-
-      if (statsNumber) {
-        statsNumber.textContent = visibleCount;
-      }
-      if (statsLabel) {
-        let word = 'вопросов';
-        if (visibleCount % 10 === 1 && visibleCount % 100 !== 11) {
-          word = 'вопрос';
-        } else if (visibleCount % 10 >= 2 && visibleCount % 10 <= 4 && (visibleCount % 100 < 10 || visibleCount % 100 >= 20)) {
-          word = 'вопроса';
-        }
-        statsLabel.textContent = `всего ${word}`;
-      }
+      
+      window.location.href = url;
     }
-
+    
     document.addEventListener('DOMContentLoaded', function() {
-      updateSubgroups();
-
       // Если group_id передан, применяем фильтр сразу
       const groupId = "{{ group_id }}";
       if (groupId && groupId !== "None" && groupId !== "") {
@@ -183,9 +119,6 @@
         // Устанавливаем значение после загрузки всех опций
         setTimeout(() => {
           groupSelect.value = groupId;
-          updateSubgroups();
-          // Явно вызываем фильтрацию после того как обновились подгруппы
-          filterQuestions();
         }, 10);
       }
     });

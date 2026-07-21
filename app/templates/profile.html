@@ -311,7 +311,11 @@
 </head>
 <body>
   <div class="page">
-    <main id="mainContent" style="margin-left: 0;">
+    <nav class="sidebar" id="sidebar" aria-label="Основная навигация">
+      {% include 'sidebar.html' %}
+    </nav>
+
+    <main id="mainContent" class="with-sidebar">
       <div class="profile-container">
         <div class="profile-card">
           <h1 class="profile-title">Профиль пользователя</h1>

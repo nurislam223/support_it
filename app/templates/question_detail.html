@@ -18,7 +18,7 @@
       {% include 'sidebar_questions.html' %}
     </nav>
 
-    <main id="mainContent">
+    <main id="mainContent" class="with-sidebar">
       <div class="header">
         <h1 class="header-title">{{ task.question }}</h1>
       </div>
@@ -29,13 +29,13 @@
             <div class="question-detail-header">
               <a href="/questions?group_id={{ task.task_subgroup.task_group.id }}" class="category-badge">{{ task.task_subgroup.task_group.name }}</a>
             </div>
-            
-            <h2 class="question-detail-text">{{ task.question }}</h2>
+
+
             
             {% if task.description %}
             <div class="answer-block description-block">
               <button class="answer-toggle" onclick="toggleAnswer('about-question')">
-                <span class="toggle-text">О чем вопрос</span>
+                <span class="toggle-text">🔍 О чём вопрос</span>
                 <span class="toggle-icon-small" id="icon-about-question">▼</span>
               </button>
               <div class="answer-content" id="content-about-question">
