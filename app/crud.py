@@ -7,7 +7,7 @@ from app.auth import get_password_hash
 def get_tasks(db: Session, skip: int = 0) -> List[Tasks]:
     return db.query(Tasks).options(
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
-    ).offset(skip).all()
+    ).order_by(Tasks.id.asc()).offset(skip).all()
 
 def get_task(db: Session, task_id: int) -> Optional[Tasks]:
     return db.query(Tasks).options(
@@ -17,12 +17,12 @@ def get_task(db: Session, task_id: int) -> Optional[Tasks]:
 def get_tasks_by_subgroup(db: Session, subgroup_id: int) -> List[Tasks]:
     return db.query(Tasks).options(
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
-    ).filter(Tasks.task_subgroup_id == subgroup_id).all()
+    ).filter(Tasks.task_subgroup_id == subgroup_id).order_by(Tasks.id.asc()).all()
 
 def get_tasks_by_group(db: Session, group_id: int) -> List[Tasks]:
     return db.query(Tasks).options(
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
-    ).filter(TaskSubgroups.task_group_id == group_id).join(TaskSubgroups).all()
+    ).filter(TaskSubgroups.task_group_id == group_id).join(TaskSubgroups).order_by(Tasks.id.asc()).all()
 
 def get_task_subgroups(db: Session) -> List[TaskSubgroups]:
     return db.query(TaskSubgroups).all()
