@@ -24,8 +24,11 @@ def get_tasks_by_group(db: Session, group_id: int) -> List[Tasks]:
         joinedload(Tasks.task_subgroup).joinedload(TaskSubgroups.task_group)
     ).filter(TaskSubgroups.task_group_id == group_id).join(TaskSubgroups).order_by(Tasks.id.asc()).all()
 
-def get_task_subgroups(db: Session) -> List[TaskSubgroups]:
-    return db.query(TaskSubgroups).all()
+def get_task_subgroups(db: Session, group_id: int = None) -> List[TaskSubgroups]:
+    query = db.query(TaskSubgroups)
+    if group_id is not None:
+        query = query.filter(TaskSubgroups.task_group_id == group_id)
+    return query.all()
 
 def get_task_subgroup(db: Session, subgroup_id: int) -> Optional[TaskSubgroups]:
     return db.query(TaskSubgroups).filter(TaskSubgroups.id == subgroup_id).first()

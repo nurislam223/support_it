@@ -90,36 +90,72 @@
   </div>
 
   <script>
+    // Данные подгрупп передаются из шаблона
+    const subgroupsData = [
+      {% for subgroup in subgroups %}
+      { "id": {{ subgroup.id }}, "name": "{{ subgroup.name | replace('"', '\\"') }}", "task_group_id": {{ subgroup.task_group_id }} },
+      {% endfor %}
+    ];
+
     function updateGroup(groupValue) {
+      populateSubgroups(groupValue);
       if (groupValue === 'all') {
         window.location.href = '/questions';
       } else {
+        // Сбрасываем подгруппу при смене группы
+        document.getElementById('subgroup-select').value = 'all';
         window.location.href = '/questions?group_id=' + groupValue;
       }
     }
+
+    function populateSubgroups(groupId) {
+      const subgroupSelect = document.getElementById('subgroup-select');
+      subgroupSelect.innerHTML = '<option value="all">Все подгруппы</option>';
+
+      if (groupId && groupId !== 'all') {
+        const filtered = subgroupsData.filter(
+          sg => sg.task_group_id == groupId
+        );
+        filtered.forEach(sg => {
+          const option = document.createElement('option');
+          option.value = sg.id;
+          option.textContent = sg.name;
+          subgroupSelect.appendChild(option);
+        });
+      }
+      // Если groupId === 'all', список остаётся пустым
+    }
     
     function filterQuestions() {
-      // При изменении подгруппы тоже перезагружаем страницу с новым URL
-      const groupValue = document.getElementById('group-select').value;
       const subgroupValue = document.getElementById('subgroup-select').value;
       
-      let url = '/questions';
-      if (groupValue !== 'all') {
-        url += '?group_id=' + groupValue;
+      if (subgroupValue === 'all') {
+        // Если подгруппа не выбрана, просто перезагружаем страницу с текущей группой
+        const groupValue = document.getElementById('group-select').value;
+        if (groupValue === 'all') {
+          window.location.href = '/questions';
+        } else {
+          window.location.href = '/questions?group_id=' + groupValue;
+        }
+        return;
       }
       
-      window.location.href = url;
+      window.location.href = '/questions?subgroup_id=' + subgroupValue;
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-      // Если group_id передан, применяем фильтр сразу
       const groupId = "{{ group_id }}";
+      const groupSelect = document.getElementById('group-select');
+      
+      // Устанавливаем выбранную группу
       if (groupId && groupId !== "None" && groupId !== "") {
-        const groupSelect = document.getElementById('group-select');
-        // Устанавливаем значение после загрузки всех опций
         setTimeout(() => {
           groupSelect.value = groupId;
+          populateSubgroups(groupId);
         }, 10);
+      } else {
+        // Группа не выбрана — подгруппа пустая
+        populateSubgroups('all');
       }
     });
   </script>

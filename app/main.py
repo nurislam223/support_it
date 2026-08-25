@@ -88,9 +88,12 @@ def home(request: Request, db: Session = Depends(get_db), user: models.User = De
     )
 
 @app.get("/questions")
-def get_questions_page(request: Request, group_id: int = None, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+def get_questions_page(request: Request, group_id: int = None, subgroup_id: int = None, db: Session = Depends(get_db), user: models.User = Depends(get_current_user_from_cookie)):
+    # Если указан subgroup_id, фильтруем вопросы по подгруппе (группа определяется автоматически)
+    if subgroup_id:
+        tasks = crud.get_tasks_by_subgroup(db, int(subgroup_id))
     # Если указан group_id, фильтруем вопросы по группе
-    if group_id:
+    elif group_id:
         tasks = crud.get_tasks_by_group(db, int(group_id))
     else:
         tasks = crud.get_tasks(db)
