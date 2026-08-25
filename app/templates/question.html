@@ -112,18 +112,17 @@
       const subgroupSelect = document.getElementById('subgroup-select');
       subgroupSelect.innerHTML = '<option value="all">Все подгруппы</option>';
 
-      if (groupId && groupId !== 'all') {
-        const filtered = subgroupsData.filter(
-          sg => sg.task_group_id == groupId
-        );
-        filtered.forEach(sg => {
-          const option = document.createElement('option');
-          option.value = sg.id;
-          option.textContent = sg.name;
-          subgroupSelect.appendChild(option);
-        });
-      }
-      // Если groupId === 'all', список остаётся пустым
+      const filtered = groupId && groupId !== 'all'
+        ? subgroupsData.filter(sg => sg.task_group_id == groupId)
+        : subgroupsData;
+
+      filtered.forEach(sg => {
+        const option = document.createElement('option');
+        option.value = sg.id;
+        option.textContent = sg.name;
+        option.setAttribute('data-group', sg.task_group_id);
+        subgroupSelect.appendChild(option);
+      });
     }
     
     function filterQuestions() {
@@ -149,20 +148,27 @@
       const groupSelect = document.getElementById('group-select');
       const subgroupSelect = document.getElementById('subgroup-select');
       
-      // Устанавливаем выбранную группу
+      // Сначала заполняем подгруппы
       if (groupId && groupId !== "None" && groupId !== "") {
         groupSelect.value = groupId;
         populateSubgroups(groupId);
-        
-        // Устанавливаем выбранную подгруппу если она есть
-        if (subgroupId && subgroupId !== "None" && subgroupId !== "") {
-          setTimeout(() => {
-            subgroupSelect.value = subgroupId;
-          }, 50);
+      } else if (subgroupId && subgroupId !== "None" && subgroupId !== "") {
+        // Если выбрана подгруппа, определяем её группу
+        const selectedSubgroup = subgroupsData.find(sg => sg.id == subgroupId);
+        if (selectedSubgroup) {
+          groupSelect.value = selectedSubgroup.task_group_id;
+          populateSubgroups(selectedSubgroup.task_group_id);
+        } else {
+          populateSubgroups('all');
         }
       } else {
-        // Группа не выбрана — подгруппа пустая
+        // Если ничего не выбрано, показываем все подгруппы
         populateSubgroups('all');
+      }
+      
+      // После заполнения подгрупп, устанавливаем выбранную подгруппу
+      if (subgroupId && subgroupId !== "None" && subgroupId !== "") {
+        subgroupSelect.value = subgroupId;
       }
     });
   </script>
