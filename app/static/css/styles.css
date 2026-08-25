@@ -194,6 +194,14 @@ nav.sidebar {
   transform: scale(0.98) translateX(3px);
 }
 
+.nav-item.active {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+  border-left: 3px solid var(--color-grey-21);
+  padding-left: 9px;
+}
+
 .footer-note {
   opacity: 0.5;
   font-family: 'Unbounded', sans-serif;

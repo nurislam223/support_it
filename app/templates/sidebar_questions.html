@@ -4,9 +4,9 @@
 </div>
 <div class="sidebar-section">
   <div class="nav-list">
-    <a href="/questions" class="nav-item" tabindex="0">Все вопросы</a>
+    <a href="/questions" class="nav-item {% if not group_id %}active{% endif %}" tabindex="0">Все вопросы</a>
     {% for group in groups %}
-    <a href="/questions?group_id={{ group.id }}" class="nav-item" tabindex="0">{{ group.name }}</a>
+    <a href="/questions?group_id={{ group.id }}" class="nav-item {% if group_id and group_id == group.id %}active{% endif %}" tabindex="0">{{ group.name }}</a>
     {% endfor %}
   </div>
 </div>

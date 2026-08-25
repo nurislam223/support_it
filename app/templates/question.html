@@ -49,7 +49,7 @@
             <select id="subgroup-select" class="filter-select" onchange="filterQuestions()">
               <option value="all">Все подгруппы</option>
               {% for subgroup in subgroups %}
-              <option value="{{ subgroup.id }}" data-group="{{ subgroup.task_group_id }}">{{ subgroup.name }}</option>
+              <option value="{{ subgroup.id }}" data-group="{{ subgroup.task_group_id }}" {% if subgroup_id and subgroup_id == subgroup.id %}selected{% endif %}>{{ subgroup.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -128,10 +128,10 @@
     
     function filterQuestions() {
       const subgroupValue = document.getElementById('subgroup-select').value;
+      const groupValue = document.getElementById('group-select').value;
       
       if (subgroupValue === 'all') {
         // Если подгруппа не выбрана, просто перезагружаем страницу с текущей группой
-        const groupValue = document.getElementById('group-select').value;
         if (groupValue === 'all') {
           window.location.href = '/questions';
         } else {
@@ -145,14 +145,21 @@
     
     document.addEventListener('DOMContentLoaded', function() {
       const groupId = "{{ group_id }}";
+      const subgroupId = "{{ subgroup_id }}";
       const groupSelect = document.getElementById('group-select');
+      const subgroupSelect = document.getElementById('subgroup-select');
       
       // Устанавливаем выбранную группу
       if (groupId && groupId !== "None" && groupId !== "") {
-        setTimeout(() => {
-          groupSelect.value = groupId;
-          populateSubgroups(groupId);
-        }, 10);
+        groupSelect.value = groupId;
+        populateSubgroups(groupId);
+        
+        // Устанавливаем выбранную подгруппу если она есть
+        if (subgroupId && subgroupId !== "None" && subgroupId !== "") {
+          setTimeout(() => {
+            subgroupSelect.value = subgroupId;
+          }, 50);
+        }
       } else {
         // Группа не выбрана — подгруппа пустая
         populateSubgroups('all');

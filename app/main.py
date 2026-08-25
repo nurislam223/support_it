@@ -108,6 +108,7 @@ def get_questions_page(request: Request, group_id: int = None, subgroup_id: int 
         "subgroups": subgroups,
         "groups": groups,
         "group_id": group_id,
+        "subgroup_id": subgroup_id,
         "is_admin": is_admin,
     })
 
